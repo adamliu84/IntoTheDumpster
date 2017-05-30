@@ -7,28 +7,30 @@ access_token = "default9876543210accesstoken0123456789"
 
 data ConfigFile = ConfigFile{ path::String,
                               filename::String,
-                              prefixPattern::String}
+                              prefixPattern::String,
+                              postfixPattern::String}
 
 genFullPath :: ConfigFile -> String
-genFullPath (ConfigFile p f _) = p++f
+genFullPath (ConfigFile p f _ _) = p++f
 
 config_files :: [ConfigFile]
-config_files = [(ConfigFile "./Levela/" "t.php" "'access_token' => "),
-                (ConfigFile "./Level1/Level2/" "t.php" "'access_token' => ")]
+config_files = [(ConfigFile "./Levela/" "t.php" "'access_token' => " ""),
+                (ConfigFile "./Level1/Level2/" "t.php" "'access_token' => " ",")]
 
-updateToken :: String -> String -> String -> String
-updateToken prefix cur newtoken = case (take (length prefix) cur == prefix) of
-                    True -> concat [prefix, "'", newtoken, "'"]
+updateToken :: ConfigFile -> String -> String -> String
+updateToken config cur newtoken = case (take (length prefix) cur == prefix) of
+                    True -> concat [prefix, "'", newtoken, "'", postfix]
                     False -> cur
+                    where prefix = prefixPattern config
+                          postfix = postfixPattern config
 
 checkFile :: ConfigFile -> String -> IO ()
-checkFile cur newtoken = do
-    exist <- doesFileExist $ genFullPath cur
+checkFile config newtoken = do
+    exist <- doesFileExist $ genFullPath config
     when exist $ do
-            ls <- fmap lines (readFile $ genFullPath cur)
-            let result = foldr (\x acc -> (updateToken prefix x newtoken):acc) [] ls
-            (length result) `seq` writeFile (genFullPath cur) (unlines result)
-            where prefix = prefixPattern cur
+            ls <- fmap lines (readFile $ genFullPath config)
+            let result = foldr (\x acc -> (updateToken config x newtoken):acc) [] ls
+            (length result) `seq` writeFile (genFullPath config) (unlines result)
 
 main :: IO ()
 main = do
