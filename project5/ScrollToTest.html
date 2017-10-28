@@ -1,0 +1,26 @@
+<html>
+<head>
+<style>
+</style>
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js" type="text/javascript"></script>
+<script>
+//Reference: https://stackoverflow.com/questions/21561480/trigger-event-when-user-scroll-to-specific-element-with-jquery
+var firstAppear = true;
+$(window).scroll(function() {
+    var hT = $('#product-display').offset().top,
+        hH = $('#product-display').outerHeight(),
+        wH = $(window).height(),
+        wS = $(this).scrollTop();
+    if (wS > (hT+hH-wH) && (hT > wS) && (wS+wH > hT+hH) && firstAppear){
+      alert("Fire!")
+      firstAppear = false;
+    }
+});
+</script>
+</head>
+<body>
+<div style="height:2000px; background:red"></div>
+<h1 id="product-display"><marquee>Product #1 Dump</marquee></h1>
+<div style="height:2000px; background:blue"></div>
+</body>
+</html>
