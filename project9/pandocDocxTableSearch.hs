@@ -38,34 +38,31 @@ readCurDocxContent :: String -> IO (String, Maybe String)
 readCurDocxContent filename = do
     rawFile <- LBS.readFile (filePath++filename)
     (Pandoc _ dataBlock) <- runIOorExplode $ readDocx defopts rawFile
-    let target = getTargetValue dataBlock
-    return (filename, target)
+    return (filename, loopDataBlockTable dataBlock)
 
-getTargetValue :: [Block] -> Maybe String
-getTargetValue dataBlock =
-    searchKeyValueCell $
-    concat $ map (genTableRowsContent) $
-    filter isTable dataBlock
-
-isTable :: Block -> Bool
-isTable (Table _ _ _ _ _) = True
-isTable _ = False
-
-genTableRowsContent :: Block -> [String]
-genTableRowsContent rs =  map stringify (concat.getTableRows $ rs)
-    where getTableRows :: Block -> [[TableCell]]
-          getTableRows (Table _ _ _ _ rows) = rows
+loopDataBlockTable :: [Block] -> Maybe String
+loopDataBlockTable [] = Nothing
+loopDataBlockTable (t@(Table _ _ _ _ _):xs) =
+    let searchResult = searchKeyValueCell.genTableRowsContent $ t
+    in case searchResult of
+        Just v -> Just v
+        Nothing -> loopDataBlockTable xs
+        where genTableRowsContent :: Block -> [String]
+              genTableRowsContent rs =  map stringify (concat.getTableRows $ rs)
+                where getTableRows :: Block -> [[TableCell]]
+                      getTableRows (Table _ _ _ _ rows) = rows
+loopDataBlockTable (_:xs) = loopDataBlockTable xs
 
 searchKeyValueCell :: [String] -> Maybe String
 searchKeyValueCell [] = Nothing
-searchKeyValueCell (x:xs)
-    | keywords `isInfixOf` x = searchTargetValueCell targetCellAfterKeyWords xs
+searchKeyValueCell xxs@(x:xs)
+    | keywords `isInfixOf` x = skipKeyValueCell targetCellAfterKeyWords xxs
     | otherwise = searchKeyValueCell xs
-    where searchTargetValueCell :: Int -> [String] -> Maybe String
-          searchTargetValueCell _ [] = Nothing
-          searchTargetValueCell i (x:xs)
+    where skipKeyValueCell :: Int -> [String] -> Maybe String
+          skipKeyValueCell _ [] = Nothing
+          skipKeyValueCell i (x:xs)
             | 0 == i = Just x
-            | otherwise = searchTargetValueCell (pred i) xs
+            | otherwise = skipKeyValueCell (pred i) xs
 
 main :: IO ()
 main = do
