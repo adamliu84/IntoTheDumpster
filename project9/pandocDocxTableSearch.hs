@@ -42,15 +42,13 @@ readCurDocxContent filename = do
 
 loopDataBlockTable :: [Block] -> Maybe String
 loopDataBlockTable [] = Nothing
-loopDataBlockTable (t@(Table _ _ _ _ _):xs) =
-    let searchResult = searchKeyValueCell.genTableRowsContent $ t
+loopDataBlockTable (t@(Table _ _ _ _ rows):xs) =
+    let searchResult = searchKeyValueCell $ genTableRowsContent
     in case searchResult of
         Just v -> Just v
         Nothing -> loopDataBlockTable xs
-        where genTableRowsContent :: Block -> [String]
-              genTableRowsContent rs =  map stringify (concat.getTableRows $ rs)
-                where getTableRows :: Block -> [[TableCell]]
-                      getTableRows (Table _ _ _ _ rows) = rows
+        where genTableRowsContent :: [String]
+              genTableRowsContent =  map stringify (concat rows)
 loopDataBlockTable (_:xs) = loopDataBlockTable xs
 
 searchKeyValueCell :: [String] -> Maybe String
