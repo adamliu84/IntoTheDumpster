@@ -37,7 +37,11 @@ postMessage psid message = do
                             "recipient=%7B%0A%20%20%22id%22%3A%20%22"++psid++"%22%0A%7D",
                             "message=%7B%0A%20%20%22text%22%3A%20%22"++message'++"%22%0A%7D"
                            ]
-    where message' = "You have typed:" ++ message
+    where message' = updateLineBreak $ "You have typed: " ++ message
+          updateLineBreak [] = []
+          updateLineBreak (x:xs)
+            | x == '\n' = "%5Cr%5Cn" ++ updateLineBreak xs
+            | otherwise = x : updateLineBreak xs
 
 getSenderIdWithMessage :: Text -> Maybe (Text, Text)
 getSenderIdWithMessage v =
