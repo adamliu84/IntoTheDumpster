@@ -10,7 +10,7 @@ import           Network.Wai                (pathInfo, rawPathInfo,
 import           Yesod
 import qualified Data.Conduit.Text as CT (decode, utf8)
 import qualified Data.Conduit.List as CL (consume)
-import           Data.Conduit (($$), (=$))
+import           Data.Conduit (runConduit, (.|))
 import qualified Parrot
 
 hub_challenge = "hub_challenge_12345"
@@ -37,7 +37,7 @@ handleWebhookR = do
                 _ -> do
                     return invalid_challenge
         _ -> do
-            texts <- rawRequestBody $$ CT.decode CT.utf8 =$ CL.consume
+            texts <- runConduit $ rawRequestBody .| CT.decode CT.utf8 .| CL.consume
             case (Parrot.getSenderIdWithMessage $ head texts) of
                 Just (x,y) -> do
                                 liftIO $ Parrot.postMessage (unpack x) (unpack y)
@@ -48,7 +48,7 @@ handleWebhookR = do
 handleTestR :: Handler Text
 handleTestR = do
     $(logInfo) "Testing\n"
-    texts <- rawRequestBody $$ CT.decode CT.utf8 =$ CL.consume
+    texts <- runConduit $ rawRequestBody .| CT.decode CT.utf8 .| CL.consume
     $(logInfo) (head texts)
     return "Testing"
 
