@@ -11,6 +11,7 @@ import           Yesod
 import           Data.Aeson
 import           Data.Text (Text)
 import           Network.Curl (curlPost)
+import           Data.List (isPrefixOf)
 
 getObject :: Text -> Value -> Maybe Value
 getObject k (Object v) = k `DMS.lookup` v
@@ -37,11 +38,7 @@ postMessage psid message = do
                             "recipient=%7B%0A%20%20%22id%22%3A%20%22"++psid++"%22%0A%7D",
                             "message=%7B%0A%20%20%22text%22%3A%20%22"++message'++"%22%0A%7D"
                            ]
-    where message' = updateLineBreak $ "You have typed: " ++ message
-          updateLineBreak [] = []
-          updateLineBreak (x:xs)
-            | x == '\n' = "%5Cr%5Cn" ++ updateLineBreak xs
-            | otherwise = x : updateLineBreak xs
+    where message' = foldr replacement ("You have typed:\n" ++ message) replacementInput
 
 getSenderIdWithMessage :: Text -> Maybe (Text, Text)
 getSenderIdWithMessage v =
@@ -70,3 +67,28 @@ getMessageText v =
     >>= getObject "message"
     >>= getObject "text"
     >>= getString
+
+data Replacement = ReplacementCharacter (Char, String) | ReplacementString (String, String)
+
+replacementInput :: [Replacement]
+replacementInput =
+     [ ReplacementCharacter ('&', "%26"),
+       ReplacementCharacter ('\n', "%5Cr%5Cn"),
+       ReplacementString ("\"", "%5C%22")
+     ]
+
+replacement :: Replacement -> String -> String
+replacement (ReplacementCharacter x) m = replaceCharacter x m
+replacement (ReplacementString x) m = replaceSubstring x m
+
+replaceCharacter :: (Char, String) -> String -> String
+replaceCharacter _ [] = []
+replaceCharacter or'@(o,r') (m:ms)
+    | m == o = r' ++ replaceCharacter or' ms
+    | otherwise = m : replaceCharacter or' ms
+
+replaceSubstring :: (String, String) -> String -> String
+replaceSubstring _ [] = []
+replaceSubstring or'@(o, r') m'@(m:ms)
+    | o `isPrefixOf` m' = r' ++ replaceSubstring or' (drop (length o) m')
+    | otherwise = m : replaceSubstring or' ms
