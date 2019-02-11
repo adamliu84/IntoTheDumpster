@@ -1,7 +1,7 @@
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE TemplateHaskell   #-}
 
-module Parrot (getSenderIdWithMessage, postMessage) where
+module Parrot (echoMessage) where
 
 import qualified Data.ByteString.Lazy.Char8 as C8 (fromStrict)
 import qualified Data.HashMap.Strict as DMS (lookup)
@@ -9,7 +9,7 @@ import qualified Data.Vector as DV (toList)
 import qualified Data.Text.Encoding as TL (encodeUtf8)
 import           Yesod
 import           Data.Aeson
-import           Data.Text (Text)
+import           Data.Text (Text, unpack)
 import           Network.Curl (curlPost)
 import           Data.List (isPrefixOf)
 
@@ -40,11 +40,11 @@ postMessage psid message = do
                            ]
     where message' = foldr replacement ("You have typed:\n" ++ message) replacementInput
 
-getSenderIdWithMessage :: Text -> Maybe (Text, Text)
-getSenderIdWithMessage v =
+echoMessage :: Text -> IO ()
+echoMessage v =
     genSenderIdWithMessage (getSenderId v) (getMessageText v)
-    where genSenderIdWithMessage (Just x) (Just y) = Just (x,y)
-          genSenderIdWithMessage _ _               = Nothing
+    where genSenderIdWithMessage (Just x) (Just y) = postMessage (unpack x) (unpack y)
+          genSenderIdWithMessage _ _               = return ()
 
 getMessaging0 :: Value -> Maybe Value
 getMessaging0 v = getObject "entry" v

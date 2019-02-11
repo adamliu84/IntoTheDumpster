@@ -12,6 +12,8 @@ import qualified Data.Conduit.Text as CT (decode, utf8)
 import qualified Data.Conduit.List as CL (consume)
 import           Data.Conduit (runConduit, (.|))
 import qualified Parrot
+import           MessengerProc
+import           Control.Monad (forM_)
 
 hub_challenge = "hub_challenge_12345"
 invalid_challenge = "invalid_challenge"
@@ -38,11 +40,14 @@ handleWebhookR = do
                     return invalid_challenge
         _ -> do
             texts <- runConduit $ rawRequestBody .| CT.decode CT.utf8 .| CL.consume
-            case (Parrot.getSenderIdWithMessage $ head texts) of
-                Just (x,y) -> do
-                                liftIO $ Parrot.postMessage (unpack x) (unpack y)
-                                $(logInfo) "Parrot back message"
-                Nothing -> $(logInfo) "Parrot back nothing"
+            forM_ texts (\x -> do
+                $(logDebug) x
+                case (MessengerProc.genWebhook $ x) of
+                    Just (MessagingReferrals v) ->  do $(logInfo) "Processing MessagingReferrals"
+                                                       $(logInfo) v
+                    Just (Messages v) ->            do $(logInfo) "Processing Messages"
+                                                       liftIO $ Parrot.echoMessage v
+                )
             return invalid_challenge
 
 handleTestR :: Handler Text
