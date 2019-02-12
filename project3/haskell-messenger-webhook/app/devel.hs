@@ -21,34 +21,38 @@ invalid_challenge = "invalid_challenge"
 data App = App
 
 mkYesod "App" [parseRoutes|
-/hm_wh     WebhookR
+/hm_wh     WebhookR GET POST
 /test      TestR
 |]
 
 instance Yesod App
 
-handleWebhookR :: Handler Text
-handleWebhookR = do
+getWebhookR :: Handler Text
+getWebhookR = do
     req <- waiRequest
-    hub_mode <- lookupGetParam "hub.mode"
-    case hub_mode of
-        Just v -> do
+    verify_token <- lookupGetParam "hub.verify_token"
+    case verify_token of
+        Just "to_be_check" -> do
             hub_challenge <- lookupGetParam "hub.challenge"
             case hub_challenge of
                 Just v -> return v
                 _ -> do
                     return invalid_challenge
-        _ -> do
-            texts <- runConduit $ rawRequestBody .| CT.decode CT.utf8 .| CL.consume
-            forM_ texts (\x -> do
-                $(logDebug) x
-                case (MessengerProc.genWebhook $ x) of
-                    Just (MessagingReferrals v) ->  do $(logInfo) "Processing MessagingReferrals"
-                                                       $(logInfo) v
-                    Just (Messages v) ->            do $(logInfo) "Processing Messages"
-                                                       liftIO $ Parrot.echoMessage v
-                )
-            return invalid_challenge
+        _ -> return invalid_challenge
+
+postWebhookR :: Handler Text
+postWebhookR = do
+    texts <- runConduit $ rawRequestBody .| CT.decode CT.utf8 .| CL.consume
+    forM_ texts (\x -> do
+        $(logDebug) x
+        case (MessengerProc.genWebhook $ x) of
+            Just (MessagingReferrals v) ->  do $(logInfo) "Processing MessagingReferrals"
+                                               $(logInfo) v
+            Just (Messages v) ->            do $(logInfo) "Processing Messages"
+                                               liftIO $ Parrot.echoMessage v
+            Nothing ->                      return ()
+        )
+    return ""
 
 handleTestR :: Handler Text
 handleTestR = do
