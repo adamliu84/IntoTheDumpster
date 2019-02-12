@@ -19,13 +19,16 @@ hub_challenge = "hub_challenge_12345"
 invalid_challenge = "invalid_challenge"
 
 data App = App
+instance Yesod App where
+    -- This function controls which messages are logged
+    shouldLogIO App src level = return $
+        True -- good for development
+        -- level == LevelWarn || level == LevelError -- good for production
 
 mkYesod "App" [parseRoutes|
 /hm_wh     WebhookR GET POST
 /test      TestR
 |]
-
-instance Yesod App
 
 getWebhookR :: Handler Text
 getWebhookR = do
@@ -40,7 +43,7 @@ getWebhookR = do
                     return invalid_challenge
         _ -> return invalid_challenge
 
-postWebhookR :: Handler Text
+postWebhookR :: Handler ()
 postWebhookR = do
     texts <- runConduit $ rawRequestBody .| CT.decode CT.utf8 .| CL.consume
     forM_ texts (\x -> do
@@ -52,7 +55,7 @@ postWebhookR = do
                                                liftIO $ Parrot.echoMessage v
             Nothing ->                      return ()
         )
-    return ""
+    return ()
 
 handleTestR :: Handler Text
 handleTestR = do
