@@ -12,6 +12,7 @@ import           Data.Aeson
 import           Data.Text (Text, unpack)
 import           Network.Curl (curlPost)
 import           Data.List (isPrefixOf)
+import           WebhookUtil
 
 getObject :: Text -> Value -> Maybe Value
 getObject k (Object v) = k `DMS.lookup` v
@@ -45,28 +46,6 @@ echoMessage v =
     genSenderIdWithMessage (getSenderId v) (getMessageText v)
     where genSenderIdWithMessage (Just x) (Just y) = postMessage (unpack x) (unpack y)
           genSenderIdWithMessage _ _               = return ()
-
-getMessaging0 :: Value -> Maybe Value
-getMessaging0 v = getObject "entry" v
-                  >>= getArray 0
-                  >>= getObject "messaging"
-                  >>= getArray 0
-
-getSenderId :: Text -> Maybe Text
-getSenderId v =
-    (decode (C8.fromStrict $ TL.encodeUtf8 v) :: Maybe Value)
-    >>= getMessaging0
-    >>= getObject "sender"
-    >>= getObject "id"
-    >>= getString
-
-getMessageText :: Text -> Maybe Text
-getMessageText v =
-    (decode (C8.fromStrict $ TL.encodeUtf8 v) :: Maybe Value)
-    >>= getMessaging0
-    >>= getObject "message"
-    >>= getObject "text"
-    >>= getString
 
 data Replacement = ReplacementCharacter (Char, String) | ReplacementString (String, String)
 

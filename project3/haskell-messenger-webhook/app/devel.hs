@@ -13,6 +13,7 @@ import qualified Data.Conduit.List as CL (consume)
 import           Data.Conduit (runConduit, (.|))
 import qualified Parrot
 import           MessengerProc
+import           WebhookUtil
 import           Control.Monad (forM_)
 
 hub_challenge = "hub_challenge_12345"
