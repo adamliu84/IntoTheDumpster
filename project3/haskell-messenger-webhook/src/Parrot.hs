@@ -3,29 +3,14 @@
 
 module Parrot (echoMessage, ducktest) where
 
-import qualified Data.ByteString.Lazy.Char8 as C8 (fromStrict)
-import qualified Data.HashMap.Strict as DMS (lookup)
-import qualified Data.Vector as DV (toList)
-import qualified Data.Text.Encoding as TL (encodeUtf8)
 import           Yesod
-import           Data.Aeson
-import           Data.Text (Text, unpack, pack)
+import           Data.Text (Text, unpack)
 import           Network.Curl (curlPost)
 import           Data.List (isPrefixOf)
 import           WebhookUtil
 import           Duckling.Core
 import           Duckling.Dimensions.EN
 import           Duckling.Testing.Types
-
-getObject :: Text -> Value -> Maybe Value
-getObject k (Object v) = k `DMS.lookup` v
-getObject _ _ = Nothing
-getArray :: Int -> Value -> Maybe Value
-getArray i (Array v) = Just ((DV.toList v)!!i)
-getArray _ _ = Nothing
-getString :: Value -> Maybe Text
-getString (String v) = Just v
-getString _ = Nothing
 
 page_access_token :: String
 page_access_token = "<PAGE_ACCESS_TOKEN>"
