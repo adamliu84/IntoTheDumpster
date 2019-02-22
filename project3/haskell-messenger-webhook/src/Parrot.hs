@@ -81,5 +81,4 @@ ducktest message = do
         parseResult = Duckling.Core.parse message testContext testOptions allDimensions
     case (length parseResult) of
         0 -> do return ()
-        _ -> do $(logInfo) (body (head parseResult))
-                $(logInfo) (pack $ show $ value (head parseResult))
+        _ -> do $(logInfo) (toJText (head parseResult))
