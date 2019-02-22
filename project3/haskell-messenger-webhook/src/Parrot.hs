@@ -1,7 +1,7 @@
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE TemplateHaskell   #-}
 
-module Parrot (echoMessage) where
+module Parrot (echoMessage, ducktest) where
 
 import qualified Data.ByteString.Lazy.Char8 as C8 (fromStrict)
 import qualified Data.HashMap.Strict as DMS (lookup)
@@ -9,10 +9,13 @@ import qualified Data.Vector as DV (toList)
 import qualified Data.Text.Encoding as TL (encodeUtf8)
 import           Yesod
 import           Data.Aeson
-import           Data.Text (Text, unpack)
+import           Data.Text (Text, unpack, pack)
 import           Network.Curl (curlPost)
 import           Data.List (isPrefixOf)
 import           WebhookUtil
+import           Duckling.Core
+import           Duckling.Dimensions.EN
+import           Duckling.Testing.Types
 
 getObject :: Text -> Value -> Maybe Value
 getObject k (Object v) = k `DMS.lookup` v
@@ -71,3 +74,12 @@ replaceSubstring _ [] = []
 replaceSubstring or'@(o, r') m'@(m:ms)
     | o `isPrefixOf` m' = r' ++ replaceSubstring or' (drop (length o) m')
     | otherwise = m : replaceSubstring or' ms
+
+ducktest :: (MonadLogger m) => Text -> m ()
+ducktest message = do
+    let
+        parseResult = Duckling.Core.parse message testContext testOptions allDimensions
+    case (length parseResult) of
+        0 -> do return ()
+        _ -> do $(logInfo) (body (head parseResult))
+                $(logInfo) (pack $ show $ value (head parseResult))

@@ -29,6 +29,7 @@ instance Yesod App where
 mkYesod "App" [parseRoutes|
 /hm_wh     WebhookR GET POST
 /test      TestR
+/duck_test DuckTestR POST
 |]
 
 getWebhookR :: Handler Text
@@ -64,6 +65,13 @@ handleTestR = do
     texts <- runConduit $ rawRequestBody .| CT.decode CT.utf8 .| CL.consume
     $(logInfo) (head texts)
     return "Testing"
+
+postDuckTestR :: Handler ()
+postDuckTestR = do
+    quack <- lookupPostParam "quack"
+    case quack of
+        Just v  -> Parrot.ducktest v
+        _       -> return ()
 
 main :: IO ()
 main = warp 3000 App
