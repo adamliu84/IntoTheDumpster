@@ -9,7 +9,7 @@ import           Network.Curl (curlPost)
 import           Data.List (isPrefixOf)
 import           WebhookUtil
 import           Duckling.Core
-import           Duckling.Dimensions.EN
+import           Duckling.Dimensions
 import           Duckling.Testing.Types
 
 page_access_token :: String
@@ -63,7 +63,7 @@ replaceSubstring or'@(o, r') m'@(m:ms)
 ducktest :: (MonadLogger m) => Text -> m ()
 ducktest message = do
     let
-        parseResult = Duckling.Core.parse message testContext testOptions allDimensions
+        parseResult = Duckling.Core.parse message testContext testOptions (Duckling.Dimensions.allDimensions EN)
     case (length parseResult) of
         0 -> do return ()
         _ -> do $(logInfo) (toJText (head parseResult))
