@@ -1,4 +1,5 @@
 {-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE RecordWildCards #-}
 
 -- https://developers.facebook.com/docs/marketing-api/reference/ad-account/delivery_estimate/
 
@@ -20,11 +21,11 @@ parseRow row = (read y'::String, read (drop 1 z)::String)
           (y',z) = break (\c -> c == ',') (drop 1 y)
 
 genEstMau :: Config -> String -> String -> IO ()
-genEstMau config i ts = do
-  let opts = defaults & param "access_token" .~ [pack $ access_token config]
+genEstMau (Config {..}) i ts = do
+  let opts = defaults & param "access_token" .~ [pack $ access_token]
              & param "targeting_spec" .~ [pack ts]
              & param "optimization_goal" .~ ["APP_INSTALLS"]
-  r <- (getWith opts (genEndPoint (ad_account_id config)))
+  r <- (getWith opts (genEndPoint (ad_account_id)))
   let response = r ^. responseBody
   print $ concat [i,"->", getEstMau (unpack response)]
 
