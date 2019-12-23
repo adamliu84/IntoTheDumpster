@@ -1,0 +1,69 @@
+Sub getSetup()
+    Dim ad_account_id As String
+    Dim access_token As String
+    ad_account_id = Range("F3").Value
+    access_token = Range("F4").Value
+        
+    numOfRows = Range("B7", Range("B7").End(xlDown)).Rows.Count
+    Dim initRow As Integer
+    initRow = 7
+    For i = 0 To (numOfRows - 1)
+    'For i = 0 To 0
+        curRow = CStr(initRow + i)
+        curData = Range("B" + curRow).Value
+        rf = ReachFrequency(ad_account_id, access_token, CStr(curData))
+        Range("C" + curRow).Value = rf
+    Next
+End Sub
+
+Function ReachFrequency(ad_account_id As String _
+, access_token As String _
+, input_data As String)
+    Dim oXMLHttp
+    Set oXMLHttp = CreateObject("Microsoft.XMLHttp")
+    fburl = "https://graph.facebook.com/v4.0/act_" + ad_account_id + "/delivery_estimate?"
+    fburl = fburl + "access_token=" + access_token
+    fburl = fburl + "&optimization_goal=APP_INSTALLS"
+    targeting_spec_data = URLEncode(input_data)
+    fburl = fburl + "&targeting_spec=" + targeting_spec_data
+    oXMLHttp.Open "GET", fburl, False
+    oXMLHttp.Send ("")
+    'With https://github.com/VBA-tools/VBA-JSON
+    Set outj = JsonConverter.ParseJson(CStr(oXMLHttp.responseText))
+    ReachFrequency = (outj("data")(1)("estimate_mau"))
+    'ReachFrequency = oXMLHttp.responseText
+End Function
+
+' https://stackoverflow.com/questions/218181/how-can-i-url-encode-a-string-in-excel-vba
+Public Function URLEncode( _
+   StringVal As String, _
+   Optional SpaceAsPlus As Boolean = False _
+) As String
+
+  Dim StringLen As Long: StringLen = Len(StringVal)
+
+  If StringLen > 0 Then
+    ReDim result(StringLen) As String
+    Dim i As Long, CharCode As Integer
+    Dim Char As String, Space As String
+
+    If SpaceAsPlus Then Space = "+" Else Space = "%20"
+
+    For i = 1 To StringLen
+      Char = Mid$(StringVal, i, 1)
+      CharCode = Asc(Char)
+      Select Case CharCode
+        Case 97 To 122, 65 To 90, 48 To 57, 45, 46, 95, 126
+          result(i) = Char
+        Case 32
+          result(i) = Space
+        Case 0 To 15
+          result(i) = "%0" & Hex(CharCode)
+        Case Else
+          result(i) = "%" & Hex(CharCode)
+      End Select
+    Next i
+    URLEncode = Join(result, "")
+  End If
+End Function
+
