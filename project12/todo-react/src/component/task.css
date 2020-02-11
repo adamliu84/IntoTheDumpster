@@ -1,0 +1,8 @@
+.Task {
+    text-align: left;
+  }
+
+.EditRemove{
+    font-size: small;
+    cursor: pointer; 
+}
