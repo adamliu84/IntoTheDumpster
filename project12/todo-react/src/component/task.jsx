@@ -33,7 +33,7 @@ class Task extends Component {
                             <input type="text" defaultValue={desc} onChange={(e) => this.setState({ curDesc: e.target.value })} />
                         </label>
                         <br />
-                        <button onClick={(e) => { this.setState({ isEdit: false }); this.props.onTaskUpdate(this.props.task.id, this.state.curTitle, this.state.curDesc); }}>Update</button>
+                        <button onClick={(e) => { this.setState({ isEdit: false }); this.props.onTaskUpdate(this.props.task._id, this.state.curTitle, this.state.curDesc); }}>Update</button>
                         <button onClick={(e) => this.setState({ isEdit: false })}>Cancel</button>
                     </form>
                 </div>
@@ -45,7 +45,7 @@ class Task extends Component {
                     <div className="EditRemove">
                         <a onClick={this.handleEdit}>Edit</a>
                         &nbsp;|&nbsp;
-                        <a onClick={() => this.props.onTaskDelete(this.props.task.id)}>
+                        <a onClick={() => this.props.onTaskDelete(this.props.task._id)}>
                             Delete
                         </a>
                     </div>

@@ -3,7 +3,9 @@ const app = express();
 const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
 require('dotenv/config');
+const cors = require('cors');
 
+app.use(cors());
 app.use(bodyParser.json());
 
 const taskRoute = require('./routes/task');

@@ -2,23 +2,29 @@ import React, { Component } from 'react';
 import logo from './logo.svg';
 import './App.css';
 import Task from './component/task'
+import axios from 'axios';
 
 class App extends Component {
 
   state = {
-    tasks: [
-      { id: 1, title: 'React CRUD', desc: 'Create a simple CRUD in React' },
-      { id: 2, title: 'Git Push', desc: 'Git push on React CRUD' },
-      { id: 3, title: 'Backend CRUD', desc: 'Create a simple CRUD in Backend' },
-      { id: 4, title: 'Git Push', desc: 'Git push on Backend CRUD' },
-    ],
+    tasks: [],
+  }
+
+  componentDidMount() {
+    axios.get('task/')
+      .then(response => {
+        this.setState({ tasks: response.data });
+      })
+      .catch((error) => {
+        console.log(error);
+      })
   }
 
   handleTaskCreate = () => {
     const tasks = [...this.state.tasks];
     let newID = 0;
     if (tasks.length !== 0) {
-      newID = (Math.max.apply(Math, tasks.map(function (o) { return o.id; }))) + 1;
+      newID = (Math.max.apply(Math, tasks.map(function (o) { return o._id; }))) + 1;
     }
     const newTask = { id: newID, title: 'New Title', desc: 'New Desc' };
     tasks.push(newTask);
@@ -27,7 +33,7 @@ class App extends Component {
 
   handleTaskUpdate = (id, newTitle, newDesc) => {
     const tasks = [...this.state.tasks];
-    const index = tasks.findIndex(t => t.id === id);
+    const index = tasks.findIndex(t => t._id === id);
     const task = tasks[index];
     task.title = newTitle;
     task.desc = newDesc;
@@ -35,7 +41,7 @@ class App extends Component {
   }
 
   handleTaskDelete = (id) => {
-    const tasks = this.state.tasks.filter(t => t.id !== id);
+    const tasks = this.state.tasks.filter(t => t._id !== id);
     this.setState({ tasks });
   }
 
@@ -66,7 +72,7 @@ class App extends Component {
           <Task
             onTaskUpdate={this.handleTaskUpdate}
             onTaskDelete={this.handleTaskDelete}
-            key={task.id}
+            key={task._id}
             task={task}
           />
         )}
