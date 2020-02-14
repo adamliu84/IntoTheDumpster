@@ -21,55 +21,52 @@ class App extends Component {
   }
 
   handleTaskCreate = () => {
+    const self = this;
     axios.post('task/', {
       title: 'New Title',
       desc: 'New Desc',
     })
       .then(function (response) {
-        console.log(response);
+        let newID = response.data._id
+        const tasks = [...self.state.tasks];
+        const newTask = { id: newID, title: 'New Title', desc: 'New Desc' };
+        tasks.push(newTask);
+        self.setState({ tasks });
       })
       .catch(function (error) {
         console.log(error);
       });
-    // const tasks = [...this.state.tasks];
-    // let newID = 0;
-    // if (tasks.length !== 0) {
-    //   newID = (Math.max.apply(Math, tasks.map(function (o) { return o._id; }))) + 1;
-    // }
-    // const newTask = { id: newID, title: 'New Title', desc: 'New Desc' };
-    // tasks.push(newTask);
-    // this.setState({ tasks });
   }
 
   handleTaskUpdate = (id, newTitle, newDesc) => {
+    const self = this;
     axios.patch(`task/${id}`, {
       title: newTitle,
       desc: newDesc,
     })
       .then(function (response) {
-        console.log(response);
+        const tasks = [...self.state.tasks];
+        const index = tasks.findIndex(t => t._id === id);
+        const task = tasks[index];
+        task.title = newTitle;
+        task.desc = newDesc;
+        self.setState({ tasks });
       })
       .catch(function (error) {
         console.log(error);
       });
-    // const tasks = [...this.state.tasks];
-    // const index = tasks.findIndex(t => t._id === id);
-    // const task = tasks[index];
-    // task.title = newTitle;
-    // task.desc = newDesc;
-    // this.setState({ tasks });
   }
 
   handleTaskDelete = (id) => {
+    const self = this;
     axios.delete(`task/${id}`)
       .then(function (response) {
-        console.log(response);
+        const tasks = self.state.tasks.filter(t => t._id !== id);
+        self.setState({ tasks });
       })
       .catch(function (error) {
         console.log(error);
       });
-    // const tasks = this.state.tasks.filter(t => t._id !== id);
-    // this.setState({ tasks });
   }
 
   render() {
