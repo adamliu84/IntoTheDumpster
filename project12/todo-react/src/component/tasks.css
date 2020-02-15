@@ -1,0 +1,50 @@
+.Tasks {
+  text-align: center;
+}
+
+.Tasks-logo {
+  height: 40vmin;
+  pointer-events: none;
+}
+
+.loginbutton {
+  background-color: #4CAF50; /* Green */
+  border: none;
+  color: white;
+  padding: 15px 32px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 16px;
+  cursor: pointer; 
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .Tasks-logo {
+    animation: Tasks-logo-spin infinite 20s linear;
+  }
+}
+
+.Tasks-header {
+  background-color: black;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: top;
+  font-size: calc(10px + 2vmin);
+  color: white;
+}
+
+.Tasks-link {
+  color: #61dafb;
+}
+
+@keyframes Tasks-logo-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
