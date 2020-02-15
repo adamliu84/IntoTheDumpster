@@ -8,8 +8,11 @@ const cors = require('cors');
 app.use(cors());
 app.use(bodyParser.json());
 
+const userRoute = require('./routes/user');
+app.use('/user', userRoute);
 const taskRoute = require('./routes/task');
 app.use('/task', taskRoute);
+// app.use('/task', authenticateToken, taskRoute);
 
 app.get('/', (req, res) => {
     res.send('Invalid');
