@@ -12,7 +12,8 @@ class Tasks extends Component {
   }
 
   componentDidMount() {
-    axios.get('task/')
+    axios.get('task/',
+      auth.getAuthorizationheader())
       .then(response => {
         this.setState({ tasks: response.data });
       })
@@ -26,7 +27,7 @@ class Tasks extends Component {
     axios.post('task/', {
       title: 'New Title',
       desc: 'New Desc',
-    })
+    }, auth.getAuthorizationheader())
       .then(function (response) {
         let newID = response.data._id
         const tasks = [...self.state.tasks];
@@ -44,7 +45,7 @@ class Tasks extends Component {
     axios.patch(`task/${id}`, {
       title: newTitle,
       desc: newDesc,
-    })
+    }, auth.getAuthorizationheader())
       .then(function (response) {
         const tasks = [...self.state.tasks];
         const index = tasks.findIndex(t => t._id === id);
@@ -60,7 +61,8 @@ class Tasks extends Component {
 
   handleTaskDelete = (id) => {
     const self = this;
-    axios.delete(`task/${id}`)
+    axios.delete(`task/${id}`,
+      auth.getAuthorizationheader())
       .then(function (response) {
         const tasks = self.state.tasks.filter(t => t._id !== id);
         self.setState({ tasks });

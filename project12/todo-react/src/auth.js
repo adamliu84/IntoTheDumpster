@@ -35,6 +35,14 @@ class Auth {
     isAuthenticated() {
         return this.authenticated;
     }
+
+    getAccessToken() {
+        return localStorage.getItem('access_token');
+    }
+
+    getAuthorizationheader() {
+        return { headers: { Authorization: 'Bearer ' + this.getAccessToken() } };
+    }
 }
 
 export default new Auth();
