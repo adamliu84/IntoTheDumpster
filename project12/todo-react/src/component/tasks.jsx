@@ -3,6 +3,7 @@ import logo from '../logo.svg';
 import './tasks.css';
 import Task from './task'
 import axios from 'axios';
+import auth from '../auth';
 
 class Tasks extends Component {
 
@@ -69,13 +70,23 @@ class Tasks extends Component {
       });
   }
 
+  handleLogout = () => {
+    auth.logout()
+      .then(() => {
+        this.props.history.push("/");
+      })
+      .catch(() => {
+
+      });
+  }
+
   render() {
     return (
       <div className="Tasks">
         <header className="Tasks-header">
           <button
             className="loginbutton"
-            onClick={() => { this.props.history.push("/"); }}>
+            onClick={() => this.handleLogout()}>
             Logout
             </button>
           <table>
