@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_test_app/manager/product.dart';
 
 class ProductView extends StatelessWidget {
@@ -98,8 +99,19 @@ class ProductView extends StatelessWidget {
     ];
   }
 
+  static const methodChannel = MethodChannel('com.into.the.dumpster/flutter');
+
   Future<void> _onclickAddToCart(BuildContext context, Product product) async {
     print("ATC >>> " + product.productId.toString());
+    try {
+      final String responseMessage = await methodChannel.invokeMethod<String>(
+          'hellofromflutter', {'productId': product.productId});
+      print(responseMessage);
+    } on Exception catch (e) {
+      print("Exception:" + e.toString());
+    } catch (e) {
+      print('Error:' + e.toString());
+    }
   }
 
   Future<void> _onclickPurchase(BuildContext context, Product product) async {
