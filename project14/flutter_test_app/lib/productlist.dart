@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_test_app/ProductView.dart';
 import 'package:flutter_test_app/manager/product.dart';
 
 class ProductList extends StatelessWidget {
@@ -12,7 +13,8 @@ class ProductList extends StatelessWidget {
             List<Product> products = snapshot.data;
             var productListTiles = products.map((e) => (ListTile(
                   title: Text(e.productName),
-                  onTap: () async => {await this._onclick(e.productId)},
+                  onTap: () async =>
+                      {await this._onclick(context, e.productId)},
                 )));
             return ListView(
               children: productListTiles.toList(),
@@ -23,10 +25,13 @@ class ProductList extends StatelessWidget {
         });
   }
 
-  Future<void> _onclick(int productId) async {
+  Future<void> _onclick(BuildContext context, int productId) async {
     Product selectedProd = await ProductManager.readProduct(productId);
     if (null != selectedProd) {
-      print(selectedProd.productName);
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => ProductView(productId)),
+      );
     }
   }
 }
