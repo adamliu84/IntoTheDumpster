@@ -1,6 +1,9 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test_app/manager/product.dart';
+import 'package:http/http.dart' as http;
 
 class ProductView extends StatelessWidget {
   final int _productID;
@@ -10,10 +13,12 @@ class ProductView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return FutureBuilder(
-      future: ProductManager.readProduct(this._productID),
+      future: Future.wait(
+          [ProductManager.readProduct(this._productID), this._getCatPicture()]),
       builder: (context, snapshot) {
         if (snapshot.hasData) {
-          Product seletedProduct = snapshot.data;
+          Product seletedProduct = snapshot.data[0];
+          String catPicUrl = snapshot.data[1];
           return Scaffold(
             appBar: AppBar(
               title: Text("Viewing " + seletedProduct.productName),
@@ -22,7 +27,7 @@ class ProductView extends StatelessWidget {
               child: Container(
                 child: Column(
                   children: <Widget>[
-                    _getProductSection(seletedProduct),
+                    _getProductSection(seletedProduct, catPicUrl),
                     ..._getButtonSection(context, seletedProduct),
                   ],
                 ),
@@ -37,7 +42,7 @@ class ProductView extends StatelessWidget {
     // Product selectedProduct = ;
   }
 
-  Widget _getProductSection(Product product) {
+  Widget _getProductSection(Product product, String catPicUrl) {
     //UI reference from https://flutter.dev/docs/development/ui/layout/tutorial
     return Container(
         padding: const EdgeInsets.all(32),
@@ -48,6 +53,7 @@ class ProductView extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
+                  if (null != catPicUrl) (Image.network(catPicUrl)),
                   /*2*/
                   Container(
                     padding: const EdgeInsets.only(bottom: 8),
@@ -116,5 +122,16 @@ class ProductView extends StatelessWidget {
 
   Future<void> _onclickPurchase(BuildContext context, Product product) async {
     print("Purchasing >>> " + product.productId.toString());
+  }
+
+  Future<String> _getCatPicture() async {
+    final response =
+        await http.get('https://api.thecatapi.com/v1/images/search');
+    var parseCat = json.decode(response.body);
+    if (response.statusCode == 200) {
+      return parseCat[0]['url'];
+    } else {
+      return null;
+    }
   }
 }
