@@ -113,6 +113,10 @@ class ProductView extends StatelessWidget {
       final String responseMessage = await methodChannel.invokeMethod<String>(
           'hellofromflutter', {'productId': product.productId});
       print(responseMessage);
+      await methodChannel.invokeMethod<String>('fbaddtocart', {
+        'productId': product.productId,
+        'productPrice': product.productPrice.toDouble()
+      });
     } on Exception catch (e) {
       print("Exception:" + e.toString());
     } catch (e) {
@@ -122,6 +126,16 @@ class ProductView extends StatelessWidget {
 
   Future<void> _onclickPurchase(BuildContext context, Product product) async {
     print("Purchasing >>> " + product.productId.toString());
+    try {
+      await methodChannel.invokeMethod<String>('fbpurchase', {
+        'productId': product.productId,
+        'productPrice': product.productPrice.toDouble()
+      });
+    } on Exception catch (e) {
+      print("Exception:" + e.toString());
+    } catch (e) {
+      print('Error:' + e.toString());
+    }
   }
 
   Future<String> _getCatPicture() async {
