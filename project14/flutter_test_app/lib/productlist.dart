@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test_app/ProductView.dart';
 import 'package:flutter_test_app/manager/product.dart';
+import 'package:flutter_test_app/youtubePlayerView.dart';
 
 class ProductList extends StatelessWidget {
   @override
@@ -16,8 +17,17 @@ class ProductList extends StatelessWidget {
                   onTap: () async =>
                       {await this._onclick(context, e.productId)},
                 )));
-            return ListView(
-              children: productListTiles.toList(),
+            return Container(
+              child: Column(
+                children: <Widget>[
+                  //Container(child: YoutubePlayerView(videoId: 'drnBMAEA3AM')),
+                  ListView(
+                    scrollDirection: Axis.vertical,
+                    shrinkWrap: true,
+                    children: productListTiles.toList(),
+                  ),
+                ],
+              ),
             );
           } else {
             return Center(child: CircularProgressIndicator());
