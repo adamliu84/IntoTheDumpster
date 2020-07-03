@@ -2,7 +2,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test_app/ProductView.dart';
 import 'package:flutter_test_app/manager/product.dart';
-import 'package:flutter_test_app/youtubePlayerView.dart';
 
 class ProductList extends StatelessWidget {
   @override
@@ -19,7 +18,6 @@ class ProductList extends StatelessWidget {
                 )));
             return Column(
               children: <Widget>[
-                // Container(child: YoutubePlayerView(videoId: 'drnBMAEA3AM')),
                 Expanded(
                   child: ListView(
                     scrollDirection: Axis.vertical,
