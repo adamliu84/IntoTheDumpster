@@ -17,17 +17,17 @@ class ProductList extends StatelessWidget {
                   onTap: () async =>
                       {await this._onclick(context, e.productId)},
                 )));
-            return Container(
-              child: Column(
-                children: <Widget>[
-                  //Container(child: YoutubePlayerView(videoId: 'drnBMAEA3AM')),
-                  ListView(
+            return Column(
+              children: <Widget>[
+                // Container(child: YoutubePlayerView(videoId: 'drnBMAEA3AM')),
+                Expanded(
+                  child: ListView(
                     scrollDirection: Axis.vertical,
                     shrinkWrap: true,
                     children: productListTiles.toList(),
                   ),
-                ],
-              ),
+                ),
+              ],
             );
           } else {
             return Center(child: CircularProgressIndicator());
