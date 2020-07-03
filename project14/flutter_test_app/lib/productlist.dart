@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test_app/ProductView.dart';
 import 'package:flutter_test_app/manager/product.dart';
+import 'package:flutter_test_app/youtubeView.dart';
 
 class ProductList extends StatelessWidget {
   @override
@@ -34,12 +35,22 @@ class ProductList extends StatelessWidget {
   }
 
   Future<void> _onclick(BuildContext context, int productId) async {
-    Product selectedProd = await ProductManager.readProduct(productId);
-    if (null != selectedProd) {
-      Navigator.push(
-        context,
-        MaterialPageRoute(builder: (context) => ProductView(productId)),
-      );
+    switch (productId) {
+      case 1:
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => YoutubeView()),
+        );
+        break;
+      default:
+        Product selectedProd = await ProductManager.readProduct(productId);
+        if (null != selectedProd) {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => ProductView(productId)),
+          );
+        }
+        break;
     }
   }
 }

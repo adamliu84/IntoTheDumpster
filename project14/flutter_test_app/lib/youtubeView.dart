@@ -17,9 +17,10 @@ class _YoutubeViewState extends State<YoutubeView> {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-        padding: const EdgeInsets.all(32),
-        child: Column(children: [
+    var youtubeStarContainer = Container(
+      padding: const EdgeInsets.all(32),
+      child: Column(
+        children: [
           Container(child: YoutubePlayerView(videoId: 'drnBMAEA3AM')),
           Container(
             child: Row(
@@ -44,6 +45,17 @@ class _YoutubeViewState extends State<YoutubeView> {
             onPressed: (_starScore > 0) ? () => this._minusStar() : null,
             child: Text('Minus Stars!'),
           ),
-        ]));
+        ],
+      ),
+    );
+
+    return Scaffold(
+      appBar: AppBar(
+        title: Text("The hill are alive!"),
+      ),
+      body: Center(
+        child: youtubeStarContainer,
+      ),
+    );
   }
 }
