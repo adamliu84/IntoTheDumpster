@@ -3,13 +3,13 @@
 import System.Exit (die)
 import Data.Char (isDigit)
 import Network.HTTP.Client
--- import Network.HTTP.Client.TLS (tlsManagerSettings)
+import Network.HTTP.Client.TLS (tlsManagerSettings)
 import qualified Data.ByteString.Lazy.Char8 as LB (ByteString, putStrLn, pack)
 
 type CommandList = (Int, (String, IO ()))
 
 base_url :: String
-base_url = "http://httpbin.org/"
+base_url = "https://httpbin.org/"
 
 sample_body_json :: LB.ByteString
 sample_body_json = LB.pack "{\"name\":\"Joe\",\"age\":12}"
@@ -48,7 +48,7 @@ testHttpGet :: IO ()
 testHttpGet = do
     initialRequest <- parseRequest (base_url ++ "/get?key1=value1&key2=value2")
     let request =  initialRequest { method = "GET"}
-    manager <- newManager defaultManagerSettings
+    manager <- newManager tlsManagerSettings
     response <- httpLbs request manager
     dump response
 
@@ -56,7 +56,7 @@ testHttpPut :: IO ()
 testHttpPut = do    
     initialRequest <- parseRequest (base_url ++ "/put?key99=value99")
     let request =  initialRequest { method = "PUT", requestBody = RequestBodyLBS sample_body_json}
-    manager <- newManager defaultManagerSettings
+    manager <- newManager tlsManagerSettings
     response <- httpLbs request manager
     dump response
 
