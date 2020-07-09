@@ -4,7 +4,6 @@ import System.Exit (die)
 import Data.Char (isDigit)
 import Network.HTTP.Client
 -- import Network.HTTP.Client.TLS (tlsManagerSettings)
-import Network.HTTP.Types.Status (statusCode, statusMessage)
 import qualified Data.ByteString.Lazy.Char8 as LB (ByteString, putStrLn, pack)
 
 type CommandList = (Int, (String, IO ()))
@@ -65,7 +64,6 @@ main :: IO ()
 main = do
     let loop = do
         let cmdList = getCmdList
-            cmd = 3
         printCmdList cmdList
         cmd <- getLine
         case cmd of
