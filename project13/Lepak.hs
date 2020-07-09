@@ -5,6 +5,7 @@ import Data.Char (isDigit)
 import Network.HTTP.Client
 import Network.HTTP.Client.TLS (tlsManagerSettings)
 import qualified Data.ByteString.Lazy.Char8 as LB (ByteString, putStrLn, pack)
+import qualified Data.ByteString.Char8 as B
 
 type CommandList = (Int, (String, IO ()))
 
@@ -21,7 +22,9 @@ getCmdList :: [CommandList]
 getCmdList = zip [1..] 
     [
         ("Execute GET", testHttpGet),
-        ("Execute PUT", testHttpPut)
+        ("Execute PUT", testHttpPut),
+        ("HTTP Basic Auth", testAuthBasicAuth),
+        ("Bearer Auth", testAuthBearer)
     ] 
 
 printCmdList :: [CommandList] -> IO ()
@@ -47,7 +50,7 @@ Not creating helper function to generate the reqeust, showing full code
 testHttpGet :: IO ()
 testHttpGet = do
     initialRequest <- parseRequest (base_url ++ "/get?key1=value1&key2=value2")
-    let request =  initialRequest { method = "GET"}
+    let request = initialRequest { method = "GET"}
     manager <- newManager tlsManagerSettings
     response <- httpLbs request manager
     dump response
@@ -55,7 +58,28 @@ testHttpGet = do
 testHttpPut :: IO ()
 testHttpPut = do    
     initialRequest <- parseRequest (base_url ++ "/put?key99=value99")
-    let request =  initialRequest { method = "PUT", requestBody = RequestBodyLBS sample_body_json}
+    let request = initialRequest { method = "PUT", requestBody = RequestBodyLBS sample_body_json}
+    manager <- newManager tlsManagerSettings
+    response <- httpLbs request manager
+    dump response
+
+{-|
+AUTH METHODS
+--}
+testAuthBasicAuth :: IO ()
+testAuthBasicAuth = do
+    let user = "user"
+        password = "password"
+    initialRequest <- parseRequest (base_url ++ "/basic-auth/" ++ user ++ "/" ++ password)
+    let request = applyBasicAuth (B.pack user) (B.pack password) $ initialRequest { method = "GET"}
+    manager <- newManager tlsManagerSettings
+    response <- httpLbs request manager
+    dump response
+
+testAuthBearer :: IO ()
+testAuthBearer = do
+    initialRequest <- parseRequest (base_url ++ "/bearer")
+    let request = initialRequest { method = "GET", requestHeaders = [("Authorization","Bearer Authorization")]}
     manager <- newManager tlsManagerSettings
     response <- httpLbs request manager
     dump response
