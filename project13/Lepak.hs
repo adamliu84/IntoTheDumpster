@@ -28,7 +28,10 @@ getCmdList = zip [1..]
         ("Status code POST", testStatusCodePost),
         ("Request inspection", testRequestInspectionAll),
         ("Response inspection cache", testResponseInspectionCache),
-        ("Response inspection post", testResponseInspectionPost)
+        ("Response inspection post", testResponseInspectionPost),
+        ("Response formats utf8", testResponseFormatUtf8),
+        ("Response formats robot.txt rules", testResponseFormatRobot),
+        ("Response formats html & xml return", testResponseFormatHtmlXml)
     ] 
 
 printCmdList :: [CommandList] -> IO ()
@@ -134,6 +137,37 @@ testResponseInspectionPost = do
     manager <- newManager tlsManagerSettings
     response <- httpLbs request manager
     dump response
+
+{-|
+RESPONSE FORMATS Returns responses in different dta formats
+--}
+testResponseFormatUtf8 :: IO ()
+testResponseFormatUtf8 = do
+    initialRequest <- parseRequest (base_url ++ "/encoding/utf8")
+    let request = initialRequest { method = "GET"}
+    manager <- newManager tlsManagerSettings
+    response <- httpLbs request manager
+    dump response
+
+testResponseFormatRobot :: IO ()
+testResponseFormatRobot = do
+    initialRequest <- parseRequest (base_url ++ "/robots.txt")
+    let request = initialRequest { method = "GET", requestHeaders = [("accept","text/plain")]}
+    manager <- newManager tlsManagerSettings
+    response <- httpLbs request manager
+    dump response
+
+testResponseFormatHtmlXml :: IO ()
+testResponseFormatHtmlXml = do
+    let allMethods = [("/html", []), ("/xml", [("accept","application/xml")])]
+    flip mapM_ allMethods
+        (\(u,h) -> do
+            initialRequest <- parseRequest (base_url ++ u)
+            let request = initialRequest { method = "GET", requestHeaders = h}
+            manager <- newManager tlsManagerSettings
+            response <- httpLbs request manager
+            dump response
+        )
 
 main :: IO ()
 main = do
