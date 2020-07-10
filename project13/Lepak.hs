@@ -26,7 +26,9 @@ getCmdList = zip [1..]
         ("HTTP Basic Auth", testAuthBasicAuth),
         ("Bearer Auth", testAuthBearer),
         ("Status code POST", testStatusCodePost),
-        ("Request inspection", testRequestInspectionAll)
+        ("Request inspection", testRequestInspectionAll),
+        ("Response inspection cache", testResponseInspectionCache),
+        ("Response inspection post", testResponseInspectionPost)
     ] 
 
 printCmdList :: [CommandList] -> IO ()
@@ -100,9 +102,10 @@ testStatusCodePost = do
 {-|
 REQUEST INSPECTION Inspect the request data
 --}
+testRequestInspectionAll :: IO ()
 testRequestInspectionAll = do
     let allMethods = [("/headers", []), ("/ip", []), ("/user-agent", [("user-agent","What do the fox say")])]
-    flip mapM_ (allMethods)
+    flip mapM_ allMethods
         (\(u,h) -> do
             initialRequest <- parseRequest (base_url ++ u)
             let request = initialRequest { method = "GET", requestHeaders = h}
@@ -111,8 +114,29 @@ testRequestInspectionAll = do
             dump response
         )
 
+{-|
+RESPONSE INSPECTION Inspect the RESPONSE data
+--}
+testResponseInspectionCache :: IO ()
+testResponseInspectionCache = do
+    initialRequest <- parseRequest (base_url ++ "/cache")
+    -- To trigger 304
+    let request = initialRequest { method = "GET", requestHeaders = [("If-Modified-Since","Wed, 21 Oct 2015 07:28:00 GMT ")]}
+    manager <- newManager tlsManagerSettings
+    response <- httpLbs request manager
+    dump response
+
+testResponseInspectionPost :: IO ()
+testResponseInspectionPost = do
+    initialRequest <- parseRequest (base_url ++ "/response-headers")
+    let request = setQueryString [("freeform", Just ("qwe 123 !@#"))] $
+                    initialRequest { method = "POST"}
+    manager <- newManager tlsManagerSettings
+    response <- httpLbs request manager
+    dump response
+
 main :: IO ()
-main = do    
+main = do
     let loop = do
         let cmdList = getCmdList
         printCmdList cmdList
