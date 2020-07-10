@@ -25,7 +25,8 @@ getCmdList = zip [1..]
         ("Execute PUT", testHttpPut),
         ("HTTP Basic Auth", testAuthBasicAuth),
         ("Bearer Auth", testAuthBearer),
-        ("Status code POST", testStatusCodePost)
+        ("Status code POST", testStatusCodePost),
+        ("Request inspection", testRequestInspectionAll)
     ] 
 
 printCmdList :: [CommandList] -> IO ()
@@ -95,6 +96,20 @@ testStatusCodePost = do
     manager <- newManager tlsManagerSettings
     response <- httpLbs request manager
     dump response
+
+{-|
+REQUEST INSPECTION Inspect the request data
+--}
+testRequestInspectionAll = do
+    let allMethods = [("/headers", []), ("/ip", []), ("/user-agent", [("user-agent","What do the fox say")])]
+    flip mapM_ (allMethods)
+        (\(u,h) -> do
+            initialRequest <- parseRequest (base_url ++ u)
+            let request = initialRequest { method = "GET", requestHeaders = h}
+            manager <- newManager tlsManagerSettings
+            response <- httpLbs request manager
+            dump response
+        )
 
 main :: IO ()
 main = do    
