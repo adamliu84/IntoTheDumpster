@@ -4,7 +4,7 @@ import System.Exit (die)
 import Data.Char (isDigit)
 import Network.HTTP.Client
 import Network.HTTP.Client.TLS (tlsManagerSettings)
-import qualified Data.ByteString.Lazy.Char8 as LB (ByteString, putStrLn, pack)
+import qualified Data.ByteString.Lazy.Char8 as LB (ByteString, putStrLn, pack, writeFile)
 import qualified Data.ByteString.Char8 as B
 
 type CommandList = (Int, (String, IO ()))
@@ -18,22 +18,6 @@ sample_body_json = LB.pack "{\"name\":\"Joe\",\"age\":12}"
 {-|
 HELPER FUNCTIONS
 --}
-getCmdList :: [CommandList]
-getCmdList = zip [1..] 
-    [
-        ("Execute GET", testHttpGet),
-        ("Execute PUT", testHttpPut),
-        ("HTTP Basic Auth", testAuthBasicAuth),
-        ("Bearer Auth", testAuthBearer),
-        ("Status code POST", testStatusCodePost),
-        ("Request inspection", testRequestInspectionAll),
-        ("Response inspection cache", testResponseInspectionCache),
-        ("Response inspection post", testResponseInspectionPost),
-        ("Response formats utf8", testResponseFormatUtf8),
-        ("Response formats robot.txt rules", testResponseFormatRobot),
-        ("Response formats html & xml return", testResponseFormatHtmlXml)
-    ] 
-
 printCmdList :: [CommandList] -> IO ()
 printCmdList cmdList = do
     putStrLn "List of commands:"
@@ -169,6 +153,17 @@ testResponseFormatHtmlXml = do
             dump response
         )
 
+{-|
+IMAGES Returns image formats
+--}
+testImageWriteJpeg :: IO ()
+testImageWriteJpeg = do
+    initialRequest <- parseRequest (base_url ++ "/image/jpeg")
+    let request = initialRequest { method = "GET", requestHeaders = [("accept","image/jpg")]}
+    manager <- newManager tlsManagerSettings
+    response <- httpLbs request manager
+    LB.writeFile "temp.jpg" $ responseBody response
+
 main :: IO ()
 main = do
     let loop = do
@@ -185,3 +180,19 @@ main = do
                     error "Invalid command, error exit"
         loop
     loop
+    where getCmdList :: [CommandList]
+          getCmdList = zip [1..]
+            [
+                ("Execute GET", testHttpGet),
+                ("Execute PUT", testHttpPut),
+                ("HTTP Basic Auth", testAuthBasicAuth),
+                ("Bearer Auth", testAuthBearer),
+                ("Status code POST", testStatusCodePost),
+                ("Request inspection", testRequestInspectionAll),
+                ("Response inspection cache", testResponseInspectionCache),
+                ("Response inspection post", testResponseInspectionPost),
+                ("Response formats utf8", testResponseFormatUtf8),
+                ("Response formats robot.txt rules", testResponseFormatRobot),
+                ("Response formats html & xml return", testResponseFormatHtmlXml),
+                ("Images read and create jpg image", testImageWriteJpeg)
+            ]
