@@ -24,7 +24,8 @@ getCmdList = zip [1..]
         ("Execute GET", testHttpGet),
         ("Execute PUT", testHttpPut),
         ("HTTP Basic Auth", testAuthBasicAuth),
-        ("Bearer Auth", testAuthBearer)
+        ("Bearer Auth", testAuthBearer),
+        ("Status code POST", testStatusCodePost)
     ] 
 
 printCmdList :: [CommandList] -> IO ()
@@ -84,8 +85,19 @@ testAuthBearer = do
     response <- httpLbs request manager
     dump response
 
+{-|
+STATUS CODES Generates responses with given status code
+--}
+testStatusCodePost :: IO ()
+testStatusCodePost = do    
+    initialRequest <- parseRequest (base_url ++ "/status/100%2C200%2C300%2C400%2C500")
+    let request = initialRequest { method = "POST"}
+    manager <- newManager tlsManagerSettings
+    response <- httpLbs request manager
+    dump response
+
 main :: IO ()
-main = do
+main = do    
     let loop = do
         let cmdList = getCmdList
         printCmdList cmdList
