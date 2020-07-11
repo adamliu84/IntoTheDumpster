@@ -1,4 +1,5 @@
 {-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE ScopedTypeVariables #-}
 
 import System.Exit (die)
 import Data.Char (isDigit)
@@ -6,6 +7,7 @@ import Network.HTTP.Client
 import Network.HTTP.Client.TLS (tlsManagerSettings)
 import qualified Data.ByteString.Lazy.Char8 as LB (ByteString, putStrLn, pack, writeFile)
 import qualified Data.ByteString.Char8 as B
+import Control.Exception (SomeException, catch)
 
 type CommandList = (Int, (String, IO ()))
 
@@ -154,6 +156,19 @@ testResponseFormatHtmlXml = do
         )
 
 {-|
+DYNAMIC DATA Generates random and dynamic data
+--}
+testDynamicDataDelay = do
+    -- Request set to be 1 sec, response to be 3 sec to trigger error
+    initialRequest <- parseRequest (base_url ++ "/delay/3") -- Response to be 3 sec delay
+    let resTimeout = responseTimeoutMicro 1000000 -- Set timeout as 1 sec only
+        request = initialRequest { method = "DELETE", responseTimeout = resTimeout}
+    manager <- newManager tlsManagerSettings
+    catch
+        (httpLbs request manager >>= dump)
+        (\(ex :: SomeException) -> putStrLn $ "Caught exception: " ++ show ex)
+
+{-|
 IMAGES Returns image formats
 --}
 testImageWriteJpeg :: IO ()
@@ -194,5 +209,6 @@ main = do
                 ("Response formats utf8", testResponseFormatUtf8),
                 ("Response formats robot.txt rules", testResponseFormatRobot),
                 ("Response formats html & xml return", testResponseFormatHtmlXml),
-                ("Images read and create jpg image", testImageWriteJpeg)
+                ("Images read and create jpg image", testImageWriteJpeg),
+                ("Response delay test", testDynamicDataDelay)
             ]
