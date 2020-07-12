@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test_app/ProductView.dart';
 import 'package:flutter_test_app/manager/product.dart';
+import 'package:flutter_test_app/websocketChatView.dart';
 import 'package:flutter_test_app/youtubeView.dart';
 
 class ProductList extends StatelessWidget {
@@ -40,6 +41,12 @@ class ProductList extends StatelessWidget {
         Navigator.push(
           context,
           MaterialPageRoute(builder: (context) => YoutubeView()),
+        );
+        break;
+      case 2:
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => WebsocketChatView()),
         );
         break;
       default:
