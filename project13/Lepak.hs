@@ -14,7 +14,7 @@ import Control.Monad (forever, unless, void)
 import Data.Text (Text, pack)
 import Control.Concurrent  (forkIO, killThread)
 
-type CommandList = (Int, (String, IO ()))
+type CommandList = (String, (String, IO ()))
 
 base_url :: String
 base_url = "https://httpbin.org/"
@@ -28,8 +28,7 @@ HELPER FUNCTIONS
 printCmdList :: [CommandList] -> IO ()
 printCmdList cmdList = do
     putStrLn "List of commands:"
-    mapM_ (\(x,(y,_)) -> putStrLn $ (show x) ++ ": " ++ y) cmdList
-    putStrLn "ws: To start WebSocket test"
+    mapM_ (\(x,(y,_)) -> putStrLn $ x ++ ": " ++ y) cmdList
     putStrLn "q: To quit gracefully"
     putStrLn "-----------"
 
@@ -228,17 +227,13 @@ main = do
         cmd <- getLine
         case cmd of
             "q" -> die "Exiting....."
-            "ws" -> runSecureClient "echo.websocket.org" 443 "/" ws
-            _   -> if (all isDigit cmd) then
-                    case (lookup (read cmd :: Int) cmdList) of
+            _   -> case (lookup cmd cmdList) of
                         Just v  -> snd v
                         Nothing -> putStrLn "Not within the function call"
-                   else
-                    error "Invalid command, error exit"
         loop
     loop
     where getCmdList :: [CommandList]
-          getCmdList = zip [1..]
+          getCmdList = (zip (map show [1..])
             [
                 ("Execute GET", testHttpGet),
                 ("Execute PUT", testHttpPut),
@@ -253,4 +248,5 @@ main = do
                 ("Response formats html & xml return", testResponseFormatHtmlXml),
                 ("Images read and create jpg image", testImageWriteJpeg),
                 ("Response delay test", testDynamicDataDelay)
-            ]
+            ])
+            ++ [("ws" , ("To start WebSocket test", runSecureClient "echo.websocket.org" 443 "/" ws))]
