@@ -8,6 +8,11 @@ import Network.HTTP.Client.TLS (tlsManagerSettings)
 import qualified Data.ByteString.Lazy.Char8 as LB (ByteString, putStrLn, pack, writeFile)
 import qualified Data.ByteString.Char8 as B
 import Control.Exception (SomeException, catch)
+import Wuss (runSecureClient)
+import Network.WebSockets (ClientApp, ConnectionException(..), Message (..), ControlMessage(..), DataMessage(..), receiveData, sendClose, sendTextData, send, receive)
+import Control.Monad (forever, unless, void)
+import Data.Text (Text, pack)
+import Control.Concurrent  (forkIO, killThread)
 
 type CommandList = (Int, (String, IO ()))
 
@@ -24,6 +29,7 @@ printCmdList :: [CommandList] -> IO ()
 printCmdList cmdList = do
     putStrLn "List of commands:"
     mapM_ (\(x,(y,_)) -> putStrLn $ (show x) ++ ": " ++ y) cmdList
+    putStrLn "ws: To start WebSocket test"
     putStrLn "q: To quit gracefully"
     putStrLn "-----------"
 
@@ -179,6 +185,41 @@ testImageWriteJpeg = do
     response <- httpLbs request manager
     LB.writeFile "temp.jpg" $ responseBody response
 
+{-|
+WEBSOCKET
+https://hackage.haskell.org/package/wuss
+--}
+ws :: ClientApp ()
+ws connection = do
+    putStrLn "Connected!"
+
+    threadID <- forkIO . forever $ do
+        receive connection >>= handleMessage >> putStrLn ""
+
+    let loop threadID = do
+            printWsList
+            line <- getLine
+            case line of
+                "close" -> do
+                    killThread threadID
+                    sendClose connection (pack "Bye!")
+                    putStrLn "Disconnected!"
+                "ping"  -> send connection (ControlMessage (Ping ("SendPing"))) >> loop threadID
+                _       -> sendTextData connection (pack line) >> loop threadID
+    loop threadID
+    where
+        printWsList :: IO ()
+        printWsList = do
+            putStrLn "List of Websocket commands:"
+            putStrLn "close: Close WebSocket connection and return to httpbin test"
+            putStrLn "ping: Send a ping to echo.websocket.org and receieve a pong"
+            putStrLn "<other>: Send a message echo.websocket.org and receieve a echo back"
+            putStrLn "-----------"
+        handleMessage :: Message -> IO ()
+        handleMessage (ControlMessage message@(Pong v)) = print message
+        handleMessage (DataMessage _ _ _ message@(Text _ _)) = print message
+        handleMessage _ = print "Other non-handler message"
+
 main :: IO ()
 main = do
     let loop = do
@@ -186,7 +227,8 @@ main = do
         printCmdList cmdList
         cmd <- getLine
         case cmd of
-            "q" -> die "Exiting....."            
+            "q" -> die "Exiting....."
+            "ws" -> runSecureClient "echo.websocket.org" 443 "/" ws
             _   -> if (all isDigit cmd) then
                     case (lookup (read cmd :: Int) cmdList) of
                         Just v  -> snd v
