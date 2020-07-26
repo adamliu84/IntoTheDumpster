@@ -12,7 +12,8 @@ import Wuss (runSecureClient)
 import Network.WebSockets (ClientApp, ConnectionException(..), Message (..), ControlMessage(..), DataMessage(..), receiveData, sendClose, sendTextData, send, receive)
 import Control.Monad (forever, unless, void)
 import Data.Text (Text, pack)
-import Control.Concurrent  (forkIO, killThread)
+import Control.Concurrent  (forkIO, killThread, threadDelay)
+import Data.Time.Clock.POSIX (getCurrentTime)
 
 type CommandList = (String, (String, IO ()))
 
@@ -185,6 +186,31 @@ testImageWriteJpeg = do
     LB.writeFile "temp.jpg" $ responseBody response
 
 {-|
+COOKIES Create and read coookies
+--}
+testCookieSet :: IO ()
+testCookieSet = do
+    initialRequest <- parseRequest (base_url ++ "/cookies/set?freeform=test_value_in_free_form")
+    let request = initialRequest { method = "GET"}
+    manager <- newManager tlsManagerSettings
+    response <- httpLbs request manager
+    dump response
+    let template_cookie = (destroyCookieJar $ responseCookieJar response) !! 0
+        cookieJar' = insertCheckedCookie
+            template_cookie {cookie_name = "injectform", cookie_value = "test_value_in_inject_form"}
+            (createCookieJar [template_cookie {cookie_domain = "httpbin.neverexist"}])
+            False
+    testCookieEchoRead manager cookieJar'
+    where
+        testCookieEchoRead :: Manager -> CookieJar -> IO ()
+        testCookieEchoRead m cj = do
+            threadDelay 3000000
+            u <- getCurrentTime
+            ir <- parseRequest (base_url ++ "/cookies")
+            let (request, cj') = insertCookiesIntoRequest ir cj u
+            httpLbs request m >>= dump >> print cj'
+
+{-|
 WEBSOCKET
 https://hackage.haskell.org/package/wuss
 --}
@@ -247,6 +273,7 @@ main = do
                 ("Response formats robot.txt rules", testResponseFormatRobot),
                 ("Response formats html & xml return", testResponseFormatHtmlXml),
                 ("Images read and create jpg image", testImageWriteJpeg),
-                ("Response delay test", testDynamicDataDelay)
+                ("Response delay test", testDynamicDataDelay),
+                ("Cookies create read test", testCookieSet)
             ])
             ++ [("ws" , ("To start WebSocket test", runSecureClient "echo.websocket.org" 443 "/" ws))]
