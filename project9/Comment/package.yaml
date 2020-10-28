@@ -39,6 +39,7 @@ executables:
     - directory
     - bytestring
     - text
+    - pandoc-types
 
 tests:
   Comment-test:

@@ -10,6 +10,7 @@ import System.Directory (getDirectoryContents)
 import Data.Char (toLower)
 import Data.Text (Text, unpack)
 import System.Environment (getArgs)
+import Text.Pandoc.Walk
 
 type ExtractorOutput = (Text, Text)
 
@@ -24,24 +25,24 @@ main = do
         [f] -> do
             rawFile <- LBS.readFile f
             (Pandoc _ dataBlock) <- runIOorExplode $ readDocx defopts rawFile    
-            let a = fteComment dataBlock
+            let a = query queryComment dataBlock
                 writeIntoFile' = writeIntoFile (f ++ "_commentExtractor.csv")
             mapM_ (writeIntoFile') a
-                
 
-fteComment :: [Block] -> [ExtractorOutput]
-fteComment db = map (extractOutComment.trimOutComment) $
-                filterOutComment db
+queryComment :: Block -> [ExtractorOutput]
+queryComment (Para il)
+    | length [ x | x@(Span (_,["comment-start"],_) _) <- il] > 0 = [trimAndExtractComment il]
+    | otherwise = []
+queryComment (Plain il)
+    | length [ x | x@(Span (_,["comment-start"],_) _) <- il] > 0 = [trimAndExtractComment il]
+    | otherwise = []
+queryComment _ = []
 
-filterOutComment :: [Block] -> [Block]
-filterOutComment dataBlock = filter c dataBlock
-    where 
-        c :: Block -> Bool
-        c (Para il) = length [ x | x@(Span (_,["comment-start"],_) _) <- il] > 0
-        c _      = False
+trimAndExtractComment :: [Inline] -> ExtractorOutput
+trimAndExtractComment = extractOutComment.trimOutComment
 
-trimOutComment :: Block -> [Inline]
-trimOutComment (Para inline) = fst $ break tw $ dropWhile dw inline
+trimOutComment :: [Inline] -> [Inline]
+trimOutComment inline = fst $ break tw $ dropWhile dw inline
     where
     dw :: Inline -> Bool
     dw (Span (_,["comment-start"],_) _) = False

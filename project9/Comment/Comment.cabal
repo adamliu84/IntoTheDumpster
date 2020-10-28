@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: b92460d908fdb35289f2a24778dca94b9e21be8a2d7f10c022f03c67b6a69bec
+-- hash: 8c6158f5a53f8bb7d12c2f60558640ec7ecc80178db0ea792c8747591cb8f995
 
 name:           Comment
 version:        0.1.0.0
@@ -48,6 +48,7 @@ executable Comment-exe
     , bytestring
     , directory
     , pandoc
+    , pandoc-types
     , text
   default-language: Haskell2010
 
