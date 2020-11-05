@@ -18,7 +18,6 @@ postUserLoginR = do
                         -- TESTING START
                         liftIO $ print.show $ v
                         access_token <- fakeGen $ (fst v) ++ "_in_jwt"
-                        fakeTest access_token
                         -- TESTING END
                         returnJson (object ["access_token" .= (access_token::Text)])
                 _      -> sendResponseStatus unauthorized401 ()
@@ -42,5 +41,13 @@ fakeTest token = do
         userId <- tokenToUserId token
         case userId of
                 Just v -> liftIO $ print v
-                _      -> return ()
+                _      -> $(logInfo) "Invalid token"
+
+getFakeR :: Handler YJ.Value
+getFakeR = do
+        lt <- JWT.lookupToken
+        case lt of
+                Just v -> fakeTest v
+                Nothing -> $(logInfo) "No token"
+        return "{}"
 -- TESTING END
