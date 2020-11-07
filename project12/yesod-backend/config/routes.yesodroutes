@@ -8,4 +8,6 @@
 
 /user/login UserLoginR POST
 
+/task/#Int TaskR GET
+
 /fake FakeR GET
