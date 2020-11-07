@@ -15,6 +15,7 @@ import Yesod.Core.Types            (Logger)
 import Yesod.Default.Util          (addStaticContentExternal)
 import Data.Aeson                  (Result (Success), fromJSON)
 import qualified Yesod.Core.Unsafe as Unsafe
+import qualified Yesod.Auth.Message as AuthMsg (AuthMessage(..))
 import qualified Auth.JWT as JWT
 import Data.Time.Clock.POSIX
 
@@ -88,6 +89,8 @@ instance Yesod App where
         :: Route App  -- ^ The route the user is visiting.
         -> Bool       -- ^ Whether or not this is a "write" request.
         -> Handler AuthResult
+    -- Routes requiring authenitcation.
+    isAuthorized (TaskR _) _ = isAuthenticated
     -- Routes not requiring authenitcation.
     isAuthorized FaviconR _ = return Authorized
     isAuthorized RobotsR _ = return Authorized
@@ -155,6 +158,29 @@ instance HasHttpManager App where
 
 unsafeHandler :: App -> Handler a -> IO a
 unsafeHandler = Unsafe.fakeHandlerGetLogger appLogger
+
+instance YesodAuth App where
+
+    type AuthId App = JWT.UserId
+
+    loginDest _ = FaviconR
+    logoutDest _ = FaviconR
+    authPlugins _ = []
+
+    -- getAuthId _ = maybeAuthId
+    authenticate _ =
+      maybe (UserError AuthMsg.InvalidLogin) Authenticated <$> maybeAuthId
+
+    maybeAuthId = do
+      mToken <- JWT.lookupToken
+      liftHandler $ maybe (return Nothing) tokenToUserId mToken
+
+isAuthenticated :: Handler AuthResult
+isAuthenticated = do
+    muid <- maybeAuthId
+    return $ case muid of
+        Nothing -> Unauthorized "Required access token to access"
+        Just _  -> Authorized
 
 {-
 Credit and taking reference
