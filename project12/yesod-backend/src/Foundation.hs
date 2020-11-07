@@ -16,6 +16,7 @@ import Yesod.Default.Util          (addStaticContentExternal)
 import Data.Aeson                  (Result (Success), fromJSON)
 import qualified Yesod.Core.Unsafe as Unsafe
 import qualified Auth.JWT as JWT
+import Data.Time.Clock.POSIX
 
 -- | The foundation datatype for your application. This can be a good place to
 -- keep settings and values requiring initialization before your application
@@ -162,8 +163,10 @@ from https://github.com/tzemanovic/haskell-yesod-realworld-example-app/blob/b0eb
 
 userIdToToken :: JWT.UserId -> HandlerFor App Text
 userIdToToken userId = do
+  expTime <- liftIO $ (+900) <$> getPOSIXTime
+  liftIO $ print expTime
   jwtSecret <- getJwtSecret
-  return $ JWT.jsonToToken jwtSecret $ toJSON userId
+  return $ JWT.jsonToToken expTime jwtSecret $ toJSON userId
 
 tokenToUserId :: Text -> Handler (Maybe JWT.UserId)
 tokenToUserId token = do

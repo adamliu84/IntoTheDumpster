@@ -41,13 +41,13 @@ fakeTest token = do
         userId <- tokenToUserId token
         case userId of
                 Just v -> liftIO $ print v
-                _      -> $(logInfo) "Invalid token"
+                _      -> sendResponseStatus unauthorized401 ()
 
 getFakeR :: Handler YJ.Value
 getFakeR = do
         lt <- JWT.lookupToken
         case lt of
                 Just v -> fakeTest v
-                Nothing -> $(logInfo) "No token"
+                Nothing -> sendResponseStatus unauthorized401 ()
         return "{}"
 -- TESTING END

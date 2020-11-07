@@ -18,6 +18,7 @@ import           ClassyPrelude.Yesod
 import           Data.Char           (isSpace)
 import           Data.Map             as Map (fromList, (!?))
 import           Web.JWT              as JWT
+import           Data.Time.Clock
 
 type UserId = String
 
@@ -28,10 +29,10 @@ lookupToken = do
   return $ extractToken . decodeUtf8 =<< mAuth
 
 -- | Create a token out of a given JSON 'Value'
-jsonToToken :: Text -> Value -> Text
-jsonToToken jwtSecret userId =
+jsonToToken :: NominalDiffTime -> Text -> Value -> Text
+jsonToToken expTime jwtSecret userId =
   encodeSigned (JWT.hmacSecret jwtSecret) mempty
-    mempty {unregisteredClaims = ClaimsMap $ Map.fromList [(jwtKey, userId)]}
+    mempty {unregisteredClaims = ClaimsMap $ Map.fromList [(jwtKey, userId)], JWT.exp = numericDate expTime}
 
 -- | Extract a JSON 'Value' out of a token
 tokenToJson :: Text -> Text -> Maybe Value

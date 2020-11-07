@@ -39,6 +39,7 @@ dependencies:
 - wai
 - foreign-store
 - jwt >=0.7.2 && <= 0.10.0
+- time <= 1.9.3
 
 # The library contains all of our application code. The executable
 # defined below is just a thin wrapper.
