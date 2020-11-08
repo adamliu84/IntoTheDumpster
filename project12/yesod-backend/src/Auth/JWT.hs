@@ -10,6 +10,8 @@ module Auth.JWT
   ( lookupToken
   , jsonToToken
   , tokenToJson
+  , tokenToExp
+  , tokenToUserIdWithExpCheck
   , UserId
   )
   where
@@ -35,10 +37,27 @@ jsonToToken expTime jwtSecret userId =
     mempty {unregisteredClaims = ClaimsMap $ Map.fromList [(jwtKey, userId)], JWT.exp = numericDate expTime}
 
 -- | Extract a JSON 'Value' out of a token
+tokenToUserIdWithExpCheck :: NominalDiffTime -> Text -> Text -> Maybe Value
+tokenToUserIdWithExpCheck curTime jwtSecret token = do
+  expUser <- tokenToExpUserJson jwtSecret token
+  case (curTime < fst expUser) of
+    True  -> return (snd expUser)
+    False -> Nothing
+
+tokenToExp :: Text -> Text -> Maybe NominalDiffTime
+tokenToExp jwtSecret token = fst <$> tokenToExpUserJson jwtSecret token
+
 tokenToJson :: Text -> Text -> Maybe Value
-tokenToJson jwtSecret token = do
+tokenToJson jwtSecret token = snd <$> tokenToExpUserJson jwtSecret token
+
+tokenToExpUserJson :: Text -> Text -> Maybe (NominalDiffTime, Value)
+tokenToExpUserJson jwtSecret token = do
     jwt <- JWT.decodeAndVerifySignature (JWT.hmacSecret jwtSecret) token
-    unClaimsMap (JWT.unregisteredClaims (JWT.claims jwt)) !? jwtKey
+    expUserChecker
+      (JWT.exp $ JWT.claims jwt)
+      (unClaimsMap (JWT.unregisteredClaims (JWT.claims jwt)) !? jwtKey)
+    where expUserChecker (Just ev) (Just uv) = Just (secondsSinceEpoch ev, uv)
+          expUserChecker _         _         = Nothing
 
 jwtKey :: Text
 jwtKey = "jwt"

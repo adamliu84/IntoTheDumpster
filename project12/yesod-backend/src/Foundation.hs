@@ -167,7 +167,8 @@ userIdToToken userId = do
 tokenToUserId :: Text -> Handler (Maybe JWT.UserId)
 tokenToUserId token = do
   jwtSecret <- getJwtSecret
-  let mUserId = fromJSON <$> JWT.tokenToJson jwtSecret token
+  curTime <- liftIO $ getPOSIXTime
+  let mUserId = fromJSON <$> JWT.tokenToUserIdWithExpCheck curTime jwtSecret token
   case mUserId of
     Just (Success userId) -> return $ Just userId
     _                     -> return Nothing
