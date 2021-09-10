@@ -63,6 +63,32 @@ const GenQuickEncrypt = ({ sourceText }) => {
   );
 }
 
+const GenHtmlJS = () => {
+  useEffect(() => {
+    //https://stackoverflow.com/questions/53396307/how-do-i-use-external-script-that-i-add-to-react-js
+    //https://betterprogramming.pub/4-ways-of-adding-external-js-files-in-reactjs-823f85de3668
+    const script = document.createElement('script');
+    script.src = "https://code.jquery.com/jquery-3.4.1.min.js";
+    script.async = true;
+    document.body.appendChild(script);
+  })
+
+  let body = `
+    <button id="this_button" onclick='(async () => {
+      console.log("The button is clicked");
+      $("#this_button").text("Now this is a button!");
+    })()'>
+      This is a button
+    </button>
+  `;
+
+  return (
+    <>
+      <div dangerouslySetInnerHTML={{ __html: body }} />
+    </>
+  );
+}
+
 function App() {
 
   const [sourceText, setSourceText] = useState("");
@@ -74,6 +100,8 @@ function App() {
         Source Text: <input type="text" name="name" ref={inputRef} />
         <input type="submit" value="Submit" onClick={(e) => setSourceText(inputRef.current.value)} />
       </header>
+      <hr />
+      <GenHtmlJS />
       <hr />
       <GenBase64 sourceText={sourceText} />
       <hr />
