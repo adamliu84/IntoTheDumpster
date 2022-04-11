@@ -1,0 +1,27 @@
+{
+    "attributes": [
+        {
+            "trait_type": "last_name",
+            "value": "劉"
+        },
+        {
+            "trait_type": "race",
+            "value": "Chinese"
+        },
+        {
+            "trait_type": "zodiac",
+            "value": "Aries"
+        },
+        {
+            "trait_type": "fav_programming_language",
+            "value": "Haskell"
+        },
+        {
+            "trait_type": "alignment",
+            "value": "Chaotic Neutral"
+        }
+    ],
+    "description": "Hello World. My first cry, my first photo...",
+    "image": "https://gateway.pinata.cloud/ipfs/QmNrDeB5fkHMYVgrM8cRMzncUVGxryaMTjbvNJiN2wVJzt",
+    "name": "KL's first photo (artistic version)"
+}
