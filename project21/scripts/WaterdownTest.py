@@ -8,5 +8,8 @@ def main():
     bizContract = BizContract.deploy(
         claimAccount.address, {"from": claimAccount})
     signature = claimAccount.sign_defunct_message("hello world")
-    print(bizContract.isTrustedVerifier(
-        signature['signature'], signature['messageHash']))
+    tx = bizContract.isTrustedVerifier(
+        signature['signature'], signature['messageHash'])
+    tx.wait(1)
+    print(tx.events[0])
+    print(tx.return_value)

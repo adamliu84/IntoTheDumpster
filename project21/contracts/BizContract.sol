@@ -4,16 +4,19 @@ pragma solidity >=0.6.0 <0.9.0;
 contract BizContract {
     address private _trustedVerifier;
 
+    event CheckTrustedVerifier(address base, address against);
+
     constructor(address trustedVerifier) {
         _trustedVerifier = trustedVerifier;
     }
 
     function isTrustedVerifier(bytes memory sig, bytes32 dataHash)
         public
-        view
         returns (bool trustedVerifierFlag)
     {
-        return _trustedVerifier == getRecoveredAddress(sig, dataHash);
+        address recoveredAddress = getRecoveredAddress(sig, dataHash);
+        emit CheckTrustedVerifier(_trustedVerifier, recoveredAddress);
+        return _trustedVerifier == recoveredAddress;
     }
 
     function getRecoveredAddress(bytes memory sig, bytes32 dataHash)
