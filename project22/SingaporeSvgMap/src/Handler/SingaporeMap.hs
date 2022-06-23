@@ -10,11 +10,10 @@ core = "<?xml version='1.0' encoding='UTF-8' standalone='no' ?><!-- Created for 
 pointedMap :: ByteString -> ByteString -> ByteString 
 pointedMap cx cy = core <> " <ellipse    cx='" <> cx <>"'    cy='" <> cy <> "'    rx='15'    ry='15'    fill='blue'    pointer-events='none'/>" <> "</svg>"
 
-
 coord :: [(ByteString, ByteString)]
 coord = [("100","100"),("200","200"),("300","300")]
 
-getSingaporeMapR :: Handler TypedContent
-getSingaporeMapR =  return $ TypedContent "image/svg+xml"
+getSingaporeMapR :: Int -> Handler TypedContent
+getSingaporeMapR locationId =  return $ TypedContent "image/svg+xml"
                         $ toContent
-                        $ pointedMap (fst $ coord!!0) (snd $ coord!!1)
+                        $ pointedMap (fst $ coord!!locationId) (snd $ coord!!locationId)

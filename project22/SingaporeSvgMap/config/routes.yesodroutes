@@ -9,4 +9,4 @@
 / HomeR GET POST
 
 /comments CommentR POST
-/singaporemap SingaporeMapR GET
+/singaporemap/#Int SingaporeMapR GET
