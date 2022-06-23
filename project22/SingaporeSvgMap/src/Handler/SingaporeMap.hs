@@ -14,6 +14,11 @@ coord :: [(ByteString, ByteString)]
 coord = [("100","100"),("200","200"),("300","300")]
 
 getSingaporeMapR :: Int -> Handler TypedContent
-getSingaporeMapR locationId =  return $ TypedContent "image/svg+xml"
+getSingaporeMapR locationId = return $ TypedContent "image/svg+xml"
                         $ toContent
                         $ pointedMap (fst $ coord!!locationId) (snd $ coord!!locationId)
+
+-- getSingaporeMapR :: Int -> Handler TypedContent
+-- getSingaporeMapR locationId =  return $ TypedContent "image/svg+xml"
+--                         $ toContent
+--                         $ pointedMap (fst $ coord!!locationId) (snd $ coord!!locationId)
