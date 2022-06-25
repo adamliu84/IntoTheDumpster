@@ -11,14 +11,9 @@ pointedMap :: ByteString -> ByteString -> ByteString
 pointedMap cx cy = core <> " <ellipse    cx='" <> cx <>"'    cy='" <> cy <> "'    rx='15'    ry='15'    fill='blue'    pointer-events='none'/>" <> "</svg>"
 
 coord :: [(ByteString, ByteString)]
-coord = [("100","100"),("200","200"),("300","300")]
+coord = [("100","100"),("150","150"),("200","200"),("250","250"),("300","300"),("350","250"),("400","200")]
 
 getSingaporeMapR :: Int -> Handler TypedContent
-getSingaporeMapR locationId = return $ TypedContent "image/svg+xml"
+getSingaporeMapR locationId = return $ TypedContent typeSvg
                         $ toContent
                         $ pointedMap (fst $ coord!!locationId) (snd $ coord!!locationId)
-
--- getSingaporeMapR :: Int -> Handler TypedContent
--- getSingaporeMapR locationId =  return $ TypedContent "image/svg+xml"
---                         $ toContent
---                         $ pointedMap (fst $ coord!!locationId) (snd $ coord!!locationId)
