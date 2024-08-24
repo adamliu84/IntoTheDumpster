@@ -68,6 +68,7 @@ app.put("/api/post/:id", async (req, res) => {
             body: 'Body ' + randomNum,
             userId: randomNum
         });
+        console.log("Updating post#" + id)
         return res.json(response.data)
     } catch (error) {
         console.error(error);
@@ -79,6 +80,7 @@ app.delete("/api/post/:id", async (req, res) => {
     try {
         const id = req.params.id;
         const response = await axios.delete('https://jsonplaceholder.typicode.com/posts/' + id);
+        console.log("Deleting post#" + id)
         return res.json(response.data)
     } catch (error) {
         console.error(error);
