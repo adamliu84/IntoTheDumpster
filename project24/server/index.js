@@ -1,8 +1,10 @@
 const express = require("express");
 const axios = require('axios');
-// const users = require("./users.json");
+const bodyParser = require('body-parser')
 
 const app = express();
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
 
 const PORT = 3001;
 
@@ -36,6 +38,7 @@ app.get("/api/post/:id", async (req, res) => {
     try {
         const id = req.params.id;
         const response = await axios.get('https://jsonplaceholder.typicode.com/posts/' + id);
+        console.log("Getting post:" + JSON.stringify(response.data))
         return res.json(response.data)
     } catch (error) {
         console.error(error);
@@ -44,13 +47,15 @@ app.get("/api/post/:id", async (req, res) => {
 });
 
 app.post("/api/post", async (req, res) => {
-    const randomNum = Math.floor(Math.random() * 100);
+    const newTitle = req.body.title;
+    const newBody = req.body.body;
     try {
         const response = await axios.post('https://jsonplaceholder.typicode.com/posts', {
-            title: 'Title ' + randomNum,
-            body: 'Body ' + randomNum,
-            userId: randomNum
+            title: newTitle,
+            body: newBody,
+            userId: Math.floor(Math.random() * 100)
         });
+        console.log("Creating post:" + JSON.stringify(response.data))
         return res.json(response.data)
     } catch (error) {
         console.error(error);
@@ -59,16 +64,17 @@ app.post("/api/post", async (req, res) => {
 });
 
 app.put("/api/post/:id", async (req, res) => {
-    const randomNum = Math.floor(Math.random() * 100);
+    const newTitle = req.body.title;
+    const newBody = req.body.body;
     try {
         const id = req.params.id;
         const response = await axios.put('https://jsonplaceholder.typicode.com/posts/' + id, {
             id: id,
-            title: 'Title ' + randomNum,
-            body: 'Body ' + randomNum,
-            userId: randomNum
+            title: newTitle,
+            body: newBody,
+            userId: Math.floor(Math.random() * 100)
         });
-        console.log("Updating post#" + id)
+        console.log("Updating post:" + JSON.stringify(response.data))
         return res.json(response.data)
     } catch (error) {
         console.error(error);
@@ -80,7 +86,7 @@ app.delete("/api/post/:id", async (req, res) => {
     try {
         const id = req.params.id;
         const response = await axios.delete('https://jsonplaceholder.typicode.com/posts/' + id);
-        console.log("Deleting post#" + id)
+        console.log("Deleting post:" + JSON.stringify(response.data))
         return res.json(response.data)
     } catch (error) {
         console.error(error);
