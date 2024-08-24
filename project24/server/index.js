@@ -8,6 +8,10 @@ app.use(bodyParser.urlencoded({ extended: true }));
 
 const PORT = 3001;
 
+app.get("/", (req, res) => {
+    res.send("Hello World from Server!");
+});
+
 app.get("/api/users", (req, res) => {
     return res.json({
         users:
