@@ -3,19 +3,19 @@ import './App.css';
 
 function App() {
 
-  const [users, setUsers] = useState([]);
+  const [posts, setPosts] = useState([]);
 
   useEffect(() => {
-    fetch(`/api/users`)
+    fetch(`/api/posts`)
       .then((res) => res.json())
-      .then((data) => setUsers(data['users']));
+      .then((data) => setPosts(data));
   }, []);
 
   return (
     <div className="App">
-      <h1>Users</h1>
-      {users.map((user) => (
-        <p key={user.id}>{user.id} → {user.desc}</p>
+      <h1>Posts</h1>
+      {posts.map((post) => (
+        <p key={post.id}>{post.id} → {post.title}</p>
       ))}
     </div>
   );
