@@ -4,11 +4,19 @@ import './App.css';
 function App() {
 
   const [posts, setPosts] = useState([]);
+  const [lastPostId, setLastPostId] = useState(null);
 
   useEffect(() => {
     fetch(`/api/posts`)
       .then((res) => res.json())
-      .then((data) => setPosts(data));
+      .then((data) => {
+        const fdata = data.filter(function (post) {
+          return post.id <= 10;
+        })
+        setPosts(fdata)
+      });
+    const temp = JSON.parse(localStorage.getItem('lastId'));
+    setLastPostId(temp);
   }, []);
 
   const [formData, setFormData] = useState({ title: "", body: "" });
@@ -27,7 +35,9 @@ function App() {
     };
     fetch(`/api/post/`, requestOptions)
       .then((res) => res.json())
-      .then((data) => console.log(data));
+      .then((data) => {
+        localStorage.setItem('lastId', JSON.stringify({ "id": data.id }));
+      });
   }
 
   const selectPost = (id) => {
@@ -45,12 +55,14 @@ function App() {
     fetch(`/api/post/${id}`, requestOptions)
       .then((res) => res.json())
       .then((data) => console.log(data));
+    localStorage.setItem('lastId', JSON.stringify({ "id": id }));
   }
 
   const deletePost = (id) => {
     fetch(`/api/post/${id}`, { method: "DELETE" })
       .then((res) => res.json())
       .then((data) => console.log(data));
+    localStorage.setItem('lastId', JSON.stringify({ "id": id }));
   }
 
   return (
@@ -80,7 +92,15 @@ function App() {
           })}
         </tbody>
       </table>
+      <h1>Local Storage</h1>
+      <table>
+        <tr>
+          <td>lastId</td>
+          <td>{JSON.stringify(lastPostId, null)}</td>
+        </tr>
+      </table>
     </div >
+
   );
 }
 
