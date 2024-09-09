@@ -1,5 +1,15 @@
 import { useEffect, useState } from "react";
 import './App.css';
+import DataTable from "./components/DataTable";
+import Typography from '@mui/material/Typography';
+import Table from '@mui/material/Table';
+import TableBody from '@mui/material/TableBody';
+import TableCell from '@mui/material/TableCell';
+import TableContainer from '@mui/material/TableContainer';
+import TableHead from '@mui/material/TableHead';
+import TableRow from '@mui/material/TableRow';
+import Paper from '@mui/material/Paper';
+
 
 function App() {
 
@@ -65,6 +75,34 @@ function App() {
     localStorage.setItem('lastId', JSON.stringify({ "id": id }));
   }
 
+  const getLocalStorageTable = () => {
+    return (
+      <TableContainer component={Paper}>
+        <Table sx={{ minWidth: 650 }} aria-label="simple table">
+          <TableHead>
+            <TableRow>
+              <TableCell>Key</TableCell>
+              <TableCell align="right">Value</TableCell>
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            <TableRow
+              key="lastid"
+              sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
+            >
+              <TableCell component="th" scope="row">
+                lastId
+              </TableCell>
+              <TableCell align="right">
+                {JSON.stringify(lastPostId, null)}
+              </TableCell>
+            </TableRow>
+          </TableBody>
+        </Table>
+      </TableContainer>
+    )
+  }
+
   return (
     <div className="App">
       <form onSubmit={handleSubmit}>
@@ -77,28 +115,14 @@ function App() {
         <button type="submit">Submit</button>
       </form>
 
-      <h1>Posts</h1>
-      <table>
-        <tbody>
-          {posts.map(function (post) {
-            return (
-              <tr key={post.id} style={{ 'outline': 'solid' }}>
-                <td><div onClick={() => updatePost(post.id)}>UPDATE</div></td>
-                <td><div onClick={() => deletePost(post.id)}>DELETE</div></td>
-                <td><div onClick={() => selectPost(post.id)}>{post.id}</div></td>
-                <td>{post.title}</td >
-              </tr>
-            )
-          })}
-        </tbody>
-      </table>
-      <h1>Local Storage</h1>
-      <table>
-        <tr>
-          <td>lastId</td>
-          <td>{JSON.stringify(lastPostId, null)}</td>
-        </tr>
-      </table>
+      <Typography sx={{ mt: 4, mb: 2 }} variant="h6" component="div">
+        Avatar with text and icon
+      </Typography>
+      <DataTable posts={posts} selectPostCallback={selectPost} updatePostCallback={updatePost} deletePostCallback={deletePost} />
+      <Typography sx={{ mt: 4, mb: 2 }} variant="h6" component="div">
+        Local Storage
+      </Typography>
+      {getLocalStorageTable()}
     </div >
 
   );
