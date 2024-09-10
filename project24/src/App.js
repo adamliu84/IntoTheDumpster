@@ -9,7 +9,9 @@ import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
-
+import TextField from "@mui/material/TextField";
+import Button from "@mui/material/Button";
+import { Container } from "@mui/material";
 
 function App() {
 
@@ -36,8 +38,7 @@ function App() {
     setFormData((prevFormData) => ({ ...prevFormData, [name]: value }));
   };
 
-  const handleSubmit = (event) => {
-    event.preventDefault();
+  const handleSubmit = () => {
     const requestOptions = {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -105,15 +106,13 @@ function App() {
 
   return (
     <div className="App">
-      <form onSubmit={handleSubmit}>
-        <label htmlFor="Title">Title:</label>
-        <input type="text" id="title" name="title" value={formData.name} onChange={handleChange} />
+      <Container>
+        <TextField id="title" name="title" label="Title" variant="filled" onChange={handleChange} />
         <br />
-        <label htmlFor="body">Body:</label>
-        <textarea id="body" name="body" value={formData.message} onChange={handleChange} />
+        <TextField id="body" name="body" label="Body" variant="filled" onChange={handleChange} />
         <br />
-        <button type="submit">Submit</button>
-      </form>
+        <Button variant="contained" onClick={handleSubmit}>Add New Post</Button>
+      </Container>
 
       <Typography sx={{ mt: 4, mb: 2 }} variant="h6" component="div">
         Avatar with text and icon
