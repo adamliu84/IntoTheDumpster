@@ -6,6 +6,7 @@ import qualified Data.ByteString.Lazy.Char8 as BS
 import Network.HTTP.Client (Response, parseRequest, newManager, httpLbs, responseStatus, method, requestHeaders, responseBody)
 import Network.HTTP.Client.TLS (tlsManagerSettings)
 import Data.ByteString.Internal (ByteString)
+import Data.List.Split (splitOn)
 
 {-|
 CONST
@@ -48,8 +49,27 @@ executeOrder = do
     getCurTime = do
         (floor `fmap` getPOSIXTime) >>= (\x -> return $ x * 1000)
 
+createListenKey :: IO String
+createListenKey = do
+    let listenKeyEndPoint = concat [base_url, "/api/v3/userDataStream"]
+    response <- getResponse listenKeyEndPoint "POST"
+    return $ getListenKey $ responseBody response
+    where
+        getListenKey :: BS.ByteString -> String
+        getListenKey str = (splitOn "\"" ((splitOn "\"listenKey\":\"" (BS.unpack str))!!1))!!0
+
+extendListenKey :: String -> IO ()
+extendListenKey listenKey = do
+    let listenKeyEndPoint = concat [base_url, "/api/v3/userDataStream?listenKey=", listenKey]
+    response <- getResponse listenKeyEndPoint "PUT"
+    dumpResponseCodeAndBody response
+
 {-|
 MAIN
 --}
 main :: IO ()
-main = executeOrder
+main = do
+    executeOrder
+    listenKey <- createListenKey
+    print listenKey
+    extendListenKey listenKey
