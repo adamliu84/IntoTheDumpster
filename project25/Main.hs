@@ -7,6 +7,15 @@ import Network.HTTP.Client (Response, parseRequest, newManager, httpLbs, respons
 import Network.HTTP.Client.TLS (tlsManagerSettings)
 import Data.ByteString.Internal (ByteString)
 import Data.List.Split (splitOn)
+import Network.WebSockets (ClientApp, receiveData, sendClose, sendTextData, runClient)
+import Network.Socket (withSocketsDo)
+import Wuss (runSecureClient)
+import Control.Monad.Trans (liftIO)
+import Control.Monad (forever, unless, void)
+import Control.Concurrent (forkIO, threadDelay)
+import Data.Text (Text, pack)
+import Control.Concurrent.QSem (newQSem, waitQSem, signalQSem, QSem)
+import System.Exit (die)
 
 {-|
 CONST
@@ -34,14 +43,16 @@ getResponse url method = do
     response <- httpLbs request manager
     return response
 
-executeOrder :: IO ()
-executeOrder = do
+executeOrder :: QSem -> IO ()
+executeOrder mutex = do
     t <- getCurTime
     let paramsWithTs = generateOrderParam t
         signature = showDigest $ hmacSha256 secret (BS.pack $ paramsWithTs)
         order_api_call_url = concat [base_url, "/api/v3/order?", paramsWithTs,"&signature=", signature] 
-    response <- getResponse order_api_call_url "POST"    
+    response <- getResponse order_api_call_url "POST"
+    waitQSem mutex
     dumpResponseCodeAndBody response 
+    signalQSem mutex
     where
     generateOrderParam :: Int -> String
     generateOrderParam t = concat [sample_order_param, "&timestamp=", show t]
@@ -64,12 +75,43 @@ extendListenKey listenKey = do
     response <- getResponse listenKeyEndPoint "PUT"
     dumpResponseCodeAndBody response
 
+userdatastreamws :: String -> ClientApp ()
+userdatastreamws listenKey conn = do
+    putStrLn "Connected!"
+
+    mutex <- newQSem 1
+
+    void . forkIO . forever $ do
+        message <- receiveData conn
+        waitQSem mutex
+        print "Websocket Response"
+        print (message :: Text)
+        signalQSem mutex
+
+    void . forkIO . forever $ do
+        waitQSem mutex
+        print "Extending listenKey"
+        extendListenKey listenKey
+        signalQSem mutex
+        threadDelay (round $ 1000000 * 60 * 50)
+
+    let loop = do
+            line <- getLine
+            unless (null line) $ do
+                case line of
+                    "e" -> executeOrder mutex
+                    "q" -> die "Killing app"
+                    _ -> putStrLn "Invalid option (e/q)"
+                loop
+    loop
+
+    sendClose conn (pack "Bye!")
+
 {-|
 MAIN
 --}
 main :: IO ()
 main = do
-    executeOrder
     listenKey <- createListenKey
     print listenKey
-    extendListenKey listenKey
+    runSecureClient root_domain 443 (concat ["/ws/", listenKey]) (userdatastreamws listenKey)
