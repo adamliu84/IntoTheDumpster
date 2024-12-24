@@ -24,4 +24,4 @@
 22. Haskell Singapore SVG Map generator with Yesod
 23. Learning Rust with simple CRU to mysql
 24. Basic CRUD React REST app
-25. Finaincal players API test out - Binance; Wise
+25. Financial players API test out - Binance; Wise
