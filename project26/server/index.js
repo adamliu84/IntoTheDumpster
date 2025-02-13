@@ -26,20 +26,24 @@ app.post("/api/post", async (req, res) => {
         let keyboardJson = JSON.parse(ollama_response.response);
 
         // Google search
-        const searchQuery = keyboardJson.keywords[0]
-        const options = {
-            method: 'GET',
-            url: `https://www.googleapis.com/youtube/v3/search?part=id,snippet&q=${searchQuery}&key=${GOOGLE_API_KEY}`,
-            headers: {
-                'User-Agent': 'Node.js App'
-            }
-        };
-        const google_response = await axios(options)
+        let video_array = []
+        for await (const keyword of keyboardJson.keywords) {
+            const searchQuery = keyboardJson.keywords[0]
+            const options = {
+                method: 'GET',
+                url: `https://www.googleapis.com/youtube/v3/search?part=id,snippet&q=${searchQuery}&key=${GOOGLE_API_KEY}`,
+                headers: {
+                    'User-Agent': 'Node.js App'
+                }
+            };
+            const google_response = await axios(options)
+            video_array = video_array.concat(google_response.data.items)
+        }
 
         // Format final response
         const frontend_response = {
             keywords: keyboardJson.keywords,
-            video_results: google_response.data.items
+            video_results: video_array
         }
         return res.json(frontend_response)
 
