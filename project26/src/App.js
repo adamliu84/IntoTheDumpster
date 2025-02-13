@@ -59,8 +59,7 @@ function App() {
       <Container>
         {keywords ? (
           <>
-            <p>Searched keyword: {keywords.join('🔺')}</p>
-            <p>Current draft version is just using the [0] from ollam suggested keywords</p>
+            <p>Searched keyword: {keywords.join('┃')}</p>
           </>
         ) : (
           <></>
