@@ -2,6 +2,7 @@ const express = require("express");
 const axios = require('axios');
 const bodyParser = require('body-parser')
 const { default: ollama } = require('ollama');
+const { placeholderlocaldata } = require("./placeholderlocaldata");
 
 const app = express();
 app.use(bodyParser.json());
@@ -36,9 +37,22 @@ app.post("/api/post", async (req, res) => {
                     'User-Agent': 'Node.js App'
                 }
             };
-            const google_response = await axios(options)
-            video_array = video_array.concat(google_response.data.items)
+            let current_result = null;
+            if ("XYZ" === GOOGLE_API_KEY) {
+                current_result = placeholderlocaldata.data.items
+            } else {
+                const google_response = await axios(options)
+                current_result = google_response.data.items
+            }
+
+            current_result.forEach(i => {
+                if (!(video_array.some(j => j.id.videoId === i.id.videoId))) {
+                    video_array.push(i)
+                }
+            });
         }
+
+
 
         // Format final response
         const frontend_response = {
