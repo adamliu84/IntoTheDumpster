@@ -1,10 +1,12 @@
 // const { Ollama } = require('langchain/llms/ollama');
-const { Ollama } = require('@langchain/community/llms/ollama');
-const { PDFLoader } = require('langchain/document_loaders/fs/pdf');
-const { RecursiveCharacterTextSplitter } = require('langchain/text_splitter');
-const { loadSummarizationChain } = require('langchain/chains');
+// import { Ollama } from '@langchain/community/llms/ollama';
 // const { PromptTemplate } = require('langchain/prompts');
-const { PromptTemplate } = require('@langchain/core/prompts');
+import { Ollama } from '@langchain/ollama'
+import { PDFLoader } from 'langchain/document_loaders/fs/pdf';
+import { RecursiveCharacterTextSplitter } from 'langchain/text_splitter';
+import { loadSummarizationChain } from 'langchain/chains';
+import { PromptTemplate } from '@langchain/core/prompts';
+import yoctoSpinner from 'yocto-spinner';
 
 // Initialize Ollama
 const ollama = new Ollama({
@@ -59,11 +61,12 @@ async function analyzePDF(pdfPath) {
         });
 
         // Run analysis
-        console.log("Running analysis...");
+        const spinner = yoctoSpinner({ text: 'Running analysis...' }).start();
         const result = await chain.invoke({
             input_documents: splitDocs,
         });
 
+        spinner.success('Analysis done!');
         console.log("Analysis Result:\n", result.text);
 
     } catch (error) {
