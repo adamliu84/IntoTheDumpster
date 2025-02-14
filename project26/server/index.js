@@ -29,7 +29,7 @@ app.post("/api/post", async (req, res) => {
         // Google search
         let video_array = []
         for await (const keyword of keyboardJson.keywords) {
-            const searchQuery = keyboardJson.keywords[0]
+            const searchQuery = keyword
             const options = {
                 method: 'GET',
                 url: `https://www.googleapis.com/youtube/v3/search?part=id,snippet&q=${searchQuery}&key=${GOOGLE_API_KEY}`,
@@ -44,15 +44,12 @@ app.post("/api/post", async (req, res) => {
                 const google_response = await axios(options)
                 current_result = google_response.data.items
             }
-
             current_result.forEach(i => {
                 if (!(video_array.some(j => j.id.videoId === i.id.videoId))) {
                     video_array.push(i)
                 }
             });
         }
-
-
 
         // Format final response
         const frontend_response = {
