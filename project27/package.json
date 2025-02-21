@@ -12,6 +12,8 @@
   "dependencies": {
     "@langchain/community": "^0.3.30",
     "@langchain/ollama": "^0.2.0",
+    "axios": "^1.7.9",
+    "cheerio": "^1.0.0",
     "langchain": "^0.1.12",
     "pdf-parse": "^1.1.1",
     "yocto-spinner": "^0.2.0"
