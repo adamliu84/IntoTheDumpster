@@ -26,4 +26,4 @@
 24. Basic CRUD React REST app
 25. Financial players API test out - Binance; Wise
 26. Local Ollama and Youtube search API for education videos
-27. Local Ollama with Langchain to analysis local pdf
+27. Local Ollama with Langchain to analysis local pdf; webpage parse
