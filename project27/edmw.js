@@ -12,14 +12,15 @@ const ollama = new Ollama({
     temperature: 0.9,
 });
 
-// /**
-//  * Fetch the HTML content of a given URL.
-//  * @param {string} url - The URL of the forum page.
-//  * @returns {Promise<string>} - The HTML content.
-//  */
+/**
+ * Fetches a thread page from the given URL.
+ *
+ * @param {string} url - The URL of the thread page to fetch.
+ * @returns {Promise<{ data: any, responseurl: string }>} A promise that resolves with an object containing the fetched data and the redirected URL.
+ */
 async function fetchThreadPage(url) {
     const response = await axios.get(url);
-    return response.data;
+    return ({ data: response.data, responseurl: response.request.res.responseUrl });
 }
 
 function removeSpecialCharacters(input) {
@@ -57,9 +58,9 @@ async function fetchAllPages(baseUrl, totalPages) {
     // for (let page = 1; page <= totalPages; page++) {    
     for (let page = 1; page <= totalPages; page++) {
         const url = `${baseUrl}?page=${page}`;
-        console.log(`Fetching page ${page}: ${url}`);
-        const html = await fetchThreadPage(url);
-        const posts = await parseForumPage(html);
+        const result = await fetchThreadPage(url);
+        console.log(`Fetching page ${page}: ${result.responseurl}`);
+        const posts = await parseForumPage(result.data);
         allPosts = allPosts.concat(posts);
     }
     return allPosts;
@@ -105,8 +106,8 @@ async function summarizeAndAnalyze(posts) {
 }
 
 (async () => {
-    // Define the base thread URL (adjust to your specific thread) & Define how many pages the thread spans; adjust as needed
-    const baseUrl = "https://forums.hardwarezone.com.sg/threads/news-jack-neo-hits-back-at-criticisms-of-his-cny-movie-a-hwz-forum-netizen-says-a-lot-of-people-left-halfway.7101813/";
+    // Define the base thread URL (adjust to your specific thread) & Define how many pages the thread spans; adjust as neede
+    const baseUrl = "https://forums.hardwarezone.com.sg/threads/7101813/";
     const totalPages = 11;
 
     try {
