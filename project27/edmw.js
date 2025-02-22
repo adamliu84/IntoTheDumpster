@@ -107,9 +107,9 @@ async function summarizeAndAnalyze(posts) {
 
 (async () => {
     // Define the base thread URL (adjust to your specific thread) & Define how many pages the thread spans; adjust as neede
-    const baseUrl = "https://forums.hardwarezone.com.sg/threads/7101813/";
-    const totalPages = 11;
-
+    const threadId = process.argv[2] ?? 7101813; //Default to Jack Neo thread
+    const baseUrl = `https://forums.hardwarezone.com.sg/threads/${threadId}/`;
+    const totalPages = process.argv[3] ?? 1;
     try {
         // Fetch all posts from the thread pages
         const posts = await fetchAllPages(baseUrl, totalPages);
