@@ -23,7 +23,7 @@
 21. Waterdown ERC735 - Blockchain ID verification concept test out
 22. Haskell Singapore SVG Map generator with Yesod
 23. Learning Rust with simple CRU to mysql
-24. Basic CRUD React REST app
+24. Basic CRUD React REST app with Prisma ORM
 25. Financial players API test out - Binance; Wise
 26. Local Ollama and Youtube search API for education videos
 27. Local Ollama with Langchain to analysis local pdf; webpage parse
