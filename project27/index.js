@@ -7,6 +7,12 @@ import { RecursiveCharacterTextSplitter } from 'langchain/text_splitter';
 import { loadSummarizationChain } from 'langchain/chains';
 import { PromptTemplate } from '@langchain/core/prompts';
 import yoctoSpinner from 'yocto-spinner';
+//Temp fix for UND_ERR_HEADERS_TIMEOUT at node:internal/deps/undici/undici:12500:13
+//https://github.com/langchain-ai/langchainjs/issues/1856#issuecomment-1793436310
+import { Agent } from "undici";
+globalThis[Symbol.for("undici.globalDispatcher.1")] = new Agent({
+    headersTimeout: 1000 * 60 * 60 * 24,
+});
 
 // Initialize Ollama
 const ollama = new Ollama({
