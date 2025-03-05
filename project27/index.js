@@ -16,6 +16,7 @@ const ollama = new Ollama({
 });
 
 async function analyzePDF(pdfPath) {
+    const spinner = yoctoSpinner({ text: 'Running analysis...' });
     try {
         // Load PDF document
         const loader = new PDFLoader(pdfPath);
@@ -61,7 +62,7 @@ async function analyzePDF(pdfPath) {
         });
 
         // Run analysis
-        const spinner = yoctoSpinner({ text: 'Running analysis...' }).start();
+        spinner.start();
         const result = await chain.invoke({
             input_documents: splitDocs,
         });
@@ -70,6 +71,7 @@ async function analyzePDF(pdfPath) {
         console.log("Analysis Result:\n", result.text);
 
     } catch (error) {
+        spinner.error("ERROR!")
         console.error("Error analyzing PDF:", error);
     }
 }
