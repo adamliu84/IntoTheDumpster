@@ -20,7 +20,9 @@ https://learn.deeplearning.ai/courses/multi-ai-agent-systems-with-crewai/lesson/
 Process, manager_llm
 
 ### Multi agent collaboration - JobApplicationPlayground.py
+https://learn.deeplearning.ai/courses/multi-ai-agent-systems-with-crewai/lesson/a8ecj/build-a-crew-to-trailor-job-applications-(code)
 MDXSearchTool, RAG, Gen recommendation file output
-TODO/WARNING: .py not really running/working as expected due to the local Ollama not working on MDXSearchTool
+
+**TODO/WARNING** .py not really running/working as expected due to the local Ollama not working on MDXSearchTool
 
 > pip install crewai==0.28.8 crewai_tools==0.1.6 langchain_community==0.0.29
