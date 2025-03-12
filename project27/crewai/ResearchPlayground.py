@@ -5,8 +5,10 @@ import os
 from crewai import Agent, Task, Crew, LLM
 
 local_llm = LLM(
-    model="ollama_chat/phi3:3.8b",
-    base_url="http://localhost:11434",
+    # model="ollama_chat/phi3:3.8b",
+    # base_url="http://localhost:11434",
+    model="ollama_chat/llama3.2",
+    base_url="http://host.docker.internal:11434",
     api_key="sk-proj-1111",
 )
 
