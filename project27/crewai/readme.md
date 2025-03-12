@@ -13,10 +13,14 @@ DirectoryReadTool,FileReadTool,SerperDevTool (serper.dev),BaseTool
 
 ### Execution flow & Export of agent - EventPlanningPlayground.py
 https://learn.deeplearning.ai/courses/multi-ai-agent-systems-with-crewai/lesson/kq8ls/automate-event-planning-(code)
-async_execution, pydantic, output_file (including tool ScrapeWebsiteTool)
+async_execution, pydantic, output_file (including tool ScrapeWebsiteTool), ask for user's input
 
 ### Multi agent collaboration - FinancialAnalysisPlayground.py
 https://learn.deeplearning.ai/courses/multi-ai-agent-systems-with-crewai/lesson/ixy19/mutli-agent-collaboration-for-financial-analysis-(code)
 Process, manager_llm
+
+### Multi agent collaboration - JobApplicationPlayground.py
+MDXSearchTool, RAG, Gen recommendation file output
+TODO/WARNING: .py not really running/working as expected due to the local Ollama not working on MDXSearchTool
 
 > pip install crewai==0.28.8 crewai_tools==0.1.6 langchain_community==0.0.29
