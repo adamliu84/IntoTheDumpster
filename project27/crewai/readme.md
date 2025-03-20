@@ -26,6 +26,7 @@ MDXSearchTool, RAG, Gen recommendation file output
 **TODO/WARNING** .py not really running/working as expected due to the local Ollama not working on MDXSearchTool
 
 ### YAML configuration - AutomatedProjectPlayground.py
+https://learn.deeplearning.ai/courses/practical-multi-ai-agents-and-advanced-use-cases-with-crewai/lesson/oqusr/automated-project:-planning,-estimation,-and-allocation
 .yaml
 
 > pip install crewai==0.28.8 crewai_tools==0.1.6 langchain_community==0.0.29
