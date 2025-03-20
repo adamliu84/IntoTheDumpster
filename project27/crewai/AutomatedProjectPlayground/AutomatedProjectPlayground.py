@@ -33,10 +33,19 @@ class ProjectPlan(BaseModel):
 #     api_key="sk-proj-1111",    
 # )
 
+# local_llm = LLM(
+#     model="ollama_chat/llama3.2",
+#     api_base="http://host.docker.internal:11434",
+# )
+
+# https://community.crewai.com/t/memory-issue-when-using-the-gemini-api/3517/4
+GOOGLE_GEMINI_API_KEY = "xxxyyyzzz"
+os.environ["GOOGLE_API_KEY"] = GOOGLE_GEMINI_API_KEY
+os.environ["GEMINI_API_KEY"] = GOOGLE_GEMINI_API_KEY
 local_llm = LLM(
-    model="ollama_chat/llama3.2",
-    api_base="http://host.docker.internal:11434",    
-)
+              model='gemini/gemini-1.5-flash',
+              api_key=GOOGLE_GEMINI_API_KEY
+            )
 
 # Define file paths for YAML configurations
 files = {
@@ -84,8 +93,8 @@ time_resource_estimation = Task(
 resource_allocation = Task(
   config=tasks_config['resource_allocation'],
   agent=resource_allocation_agent,
-  output_json=ProjectPlan,
-#   output_pydantic=ProjectPlan # This is the structured output we want
+#   output_json=ProjectPlan,
+  output_pydantic=ProjectPlan # This is the structured output we want
 )
 
 # Creating Crew
@@ -169,7 +178,7 @@ print(df_usage_metrics)
 
 # https://community.crewai.com/t/what-should-i-do-if-kickoff-return-nothing-on-pydantic-even-if-i-give-pydantic-model/2147
 # Local model maybe not be capable to output pydantic
-# result.pydantic.dict()
+print(result.pydantic.dict())
 
 # tasks = result.pydantic.dict()['tasks']
 # df_tasks = pd.DataFrame(tasks)
