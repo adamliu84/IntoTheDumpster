@@ -29,4 +29,8 @@ MDXSearchTool, RAG, Gen recommendation file output
 https://learn.deeplearning.ai/courses/practical-multi-ai-agents-and-advanced-use-cases-with-crewai/lesson/oqusr/automated-project:-planning,-estimation,-and-allocation
 .yaml
 
+### API (External) integration - ProjectProgressReportPlayground.py
+https://learn.deeplearning.ai/courses/practical-multi-ai-agents-and-advanced-use-cases-with-crewai/lesson/xi5md/building-project-progress-report
+BaseTool, .env loader
+
 > pip install crewai==0.28.8 crewai_tools==0.1.6 langchain_community==0.0.29
