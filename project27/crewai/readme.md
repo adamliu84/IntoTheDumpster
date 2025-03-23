@@ -43,4 +43,13 @@ Flow
 https://learn.deeplearning.ai/courses/practical-multi-ai-agents-and-advanced-use-cases-with-crewai/lesson/aix1c/content-creation-at-scale
 Multi-Model
 
+### CrewAI CLI - blogpostcrewplayground
+- https://learn.deeplearning.ai/courses/practical-multi-ai-agents-and-advanced-use-cases-with-crewai/lesson/omdqe/blog-post-crew-in-production
+- https://docs.crewai.com/concepts/cli
+```
+crewai create crew new_project --provider gemini
+crewai install
+crewai run
+```
+
 > pip install crewai==0.28.8 crewai_tools==0.1.6 langchain_community==0.0.29
