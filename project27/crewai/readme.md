@@ -39,4 +39,8 @@ Flow
 
 **TODO/WARNING** .py not really running/working as expected due 400 Failed to convert text into a pydantic model due to the following error: litellm.BadRequestError: VertexAIException BadRequestError Invalid JSON payload received. Unknown name \"default\" at 'tools[0].function_declarations[0].parameters.properties[1].value.properties[3].value': Cannot find field.\nInvalid JSON payload received. Unknown name \"default\" at 'tools[0].function_declarations[0].parameters.properties[2].value.properties[2].value': Cannot find field.
 
+### Multi-Model - ContentCreationPlayground.py
+https://learn.deeplearning.ai/courses/practical-multi-ai-agents-and-advanced-use-cases-with-crewai/lesson/aix1c/content-creation-at-scale
+Multi-Model
+
 > pip install crewai==0.28.8 crewai_tools==0.1.6 langchain_community==0.0.29
