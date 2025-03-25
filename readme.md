@@ -30,3 +30,4 @@
 28. Re-writing Sciencebuddies Q-learning Python into Haskell (NOTE pair programming with Ollama)
     - https://www.sciencebuddies.org/science-fair-projects/project-ideas/ArtificialIntelligence_p008/artificial-intelligence/machine-learning-maze
     - https://www.sciencebuddies.org/ai/colab/maze.ipynb
+29. Crewai tutorial and tryout
