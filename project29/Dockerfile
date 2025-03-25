@@ -23,7 +23,7 @@ EXPOSE 5000
 
 # Set the entrypoint to crewai
 ENTRYPOINT ["crewai"]
-RUN curl -fsSL https://ollama.com/install.sh | sh
+# RUN curl -fsSL https://ollama.com/install.sh | sh
 
 # Default to "run" if no command is provided
 CMD ["run"]
