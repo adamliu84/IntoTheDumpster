@@ -31,3 +31,4 @@
     - https://www.sciencebuddies.org/science-fair-projects/project-ideas/ArtificialIntelligence_p008/artificial-intelligence/machine-learning-maze
     - https://www.sciencebuddies.org/ai/colab/maze.ipynb
 29. Crewai tutorial and tryout
+30. _Vibecoding🏄_ & learning about Haskell extension
