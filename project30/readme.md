@@ -57,3 +57,11 @@ TypeFamilies: This extension allows you to define functions at the type level. T
 15) {-# LANGUAGE GADTs #-}
 
 GADTs (Generalized Algebraic Data Types): This extension allows you to define data types where the return type of the constructors can vary. This provides more fine-grained control over the type of data that can be stored in the data type, enabling you to express more complex invariants and relationships at the type level.
+
+16) {-# LANGUAGE ExistentialQuantification #-}
+
+The ExistentialQuantification extension allows the creation of data types that can hold values of different types, as long as those types satisfy a certain constraint, typically being an instance of a particular type class. This is achieved using the forall keyword in the data constructor definition to introduce a type variable that doesn't appear in the result type of the constructor. Existential types are particularly useful for creating heterogeneous collections, where you need to store a list or other structure containing elements of different types that share a common interface. It provides a way to abstract over the specific type of a value while still retaining the ability to perform operations defined by the constraint.
+
+17) {-# LANGUAGE TypeOperators #-}
+
+The TypeOperators extension allows the use and definition of types with operator names. In standard Haskell, operator symbols are primarily used for value-level functions. With TypeOperators, you can use symbols like :+:, @@, or --> as names for type constructors or type synonyms, and you can use them infix in type signatures. This can be particularly useful for creating type-level syntax that closely mirrors notations used in specific domains, such as mathematics or logic. It can lead to more readable and domain-specific type-level code.
