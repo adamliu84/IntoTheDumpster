@@ -8,8 +8,10 @@ type family ElementType container where
   ElementType (Either a b) = b
   ElementType (Custom _) = String -- For example, force return String
 
-class HasElement container where
-  firstElement :: container -> ElementType container
+-- class HasElement container where
+--   firstElement :: container -> ElementType container
+class HasElement c where
+  firstElement :: c -> ElementType c
 
 instance HasElement [a] where
   firstElement :: [a] -> ElementType [a]
