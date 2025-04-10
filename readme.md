@@ -24,7 +24,7 @@
 22. Haskell Singapore SVG Map generator with Yesod
 23. Learning Rust with simple CRU to mysql
 24. Basic CRUD React REST app with Prisma ORM
-25. Financial players API test out - Binance; Wise
+25. Financial players API test out - Binance; Wise; TsuruCaptial
 26. Local Ollama and Youtube search API for education videos
 27. Local Ollama with Langchain to analysis local pdf; webpage parse
 28. Re-writing Sciencebuddies Q-learning Python into Haskell (NOTE pair programming with Ollama)
