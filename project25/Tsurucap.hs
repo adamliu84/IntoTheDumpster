@@ -1,5 +1,5 @@
 -- WARN/NOTE/TODO: The following is acting as a basic, it is not coded to the requirement spec asks!
--- TODO: [Remove print (take 9, Error in timestamp precision, -r order requirement]
+-- TODO: [Remove print (take 9, -r order requirement]
 -- Ref: https://www.tsurucapital.com/en/code-sample.html
 -- Special thanks & core ref learning from: https://github.com/iprokin/pcapKospi200
 {-
@@ -268,7 +268,7 @@ getQuoteLine = do
                     && eOm == endOfMessage of
                 True  ->
                     return $ 
-                        Right quoteMessage {qmPacketTs= fromIntegral timestampSec + fromIntegral timestampSec * pcapTsUsecUnits}
+                        Right quoteMessage {qmPacketTs= fromIntegral timestampSec + fromIntegral timestampUsec * pcapTsUsecUnits}
                 False ->
                     return $
                         error'' 2
