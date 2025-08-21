@@ -32,3 +32,4 @@
     - https://www.sciencebuddies.org/ai/colab/maze.ipynb
 29. Crewai tutorial and tryout
 30. _Vibecoding_ & learning about Haskell extension
+31. Haskell standard FFI binding / C-call
