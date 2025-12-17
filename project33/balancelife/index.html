@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<!-- http-server --cors --ssl -c-1 -p 8080 -a 127.0.0.1  -->
+<!-- https://www.facebook.com/embed/instantgames/xxxxxx/player?game_url=https://127.0.0.1:8080 -->
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>Meta Instant Game</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: #000000;
+            color: white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            font-family: sans-serif;
+            overflow: hidden;
+        }
+
+        .container {
+            position: relative;
+            /* Anchors the child */
+            width: 800px;
+            height: 600px;
+        }
+
+        .base-layer {
+            width: 100%;
+            height: 100%;
+            background: green;
+            /* Represents your game */
+        }
+
+        .overlay-layer {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0);
+            /* Semi-transparent black */
+            z-index: 10;
+            /* Ensures it is on top */
+
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: white;
+        }
+
+        #game-status {
+            text-align: center;
+            top: -100px;
+            z-index: 10;
+        }
+    </style>
+    <script src="https://connect.facebook.net/en_US/fbinstant.8.0.js"></script>
+    <script src="planck.js"></script>
+    <script src="phaser.min.js"></script>
+    <script src="game.js"></script>
+</head>
+
+<body>
+    <div class="container">
+        <div id="thegame"></div>
+        <div id="game-status" class="overlay-layer">Loading Game...</div>
+        <div id="fb-sdk-cmd-selector" class="overlay-layer">
+            <select id="actionSelector" onchange="handleSelection()">
+                <option value="">▼ BASIC---------------------------------------------</option>
+                <option value="FBInstant.getSDKVersion">FBInstant.getSDKVersion</option>
+                <option value="FBInstant.getPlatform">FBInstant.getPlatform</option>
+                <option value="FBInstant.getSupportedAPIs">FBInstant.getSupportedAPIs</option>
+            </select>
+        </div>
+    </div>
+
+    <script>
+        FBInstant.initializeAsync()
+            .then(function () {
+                console.log("SDK Initialized");
+                FBInstant.setLoadingProgress(100);
+                return FBInstant.startGameAsync();
+            })
+            .then(function () {
+                var playerId = FBInstant.player.getID();
+                var status = document.getElementById('game-status');
+                status.innerText = "Hello, " + playerId;
+                startGameLoop();
+            })
+            .catch(function (error) {
+                console.error("Error during initialization:", error);
+            });
+
+        function startGameLoop() {
+            console.log("Game loop is now running.");
+        }
+
+        function handleSelection() {
+            const selector = document.getElementById('actionSelector');
+            const choice = selector.value;
+            const overlay = document.getElementById('game-status');
+            var playerId = FBInstant.player.getID();
+
+            if (!choice || choice === "") return;
+
+            // Logic based on selection
+            if (choice === "FBInstant.getPlatform") {
+                overlay.innerText = statusFormatter(choice, FBInstant.getPlatform());
+            } else if (choice === "FBInstant.getSDKVersion") {
+                overlay.innerText = statusFormatter(choice, FBInstant.getSDKVersion());
+            } else if (choice === "FBInstant.getSupportedAPIs") {
+                overlay.innerText = statusFormatter(choice, FBInstant.getSupportedAPIs());
+                console.log(FBInstant.getSupportedAPIs());
+            }
+
+            setTimeout(() => {
+                overlay.innerText = "Hello back, " + playerId;
+            }, 1500);
+        }
+
+        function statusFormatter(choice, value) {
+            return choice + ": " + value;
+        }
+    </script>
+</body>
+
+</html>
