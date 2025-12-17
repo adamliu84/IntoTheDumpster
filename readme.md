@@ -33,3 +33,5 @@
 29. Crewai tutorial and tryout
 30. _Vibecoding_ & learning about Haskell extension
 31. Haskell standard FFI binding / C-call
+32. MCP server in python
+33. Simple Meta Instant Game SDK implementation
