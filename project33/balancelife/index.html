@@ -70,10 +70,14 @@
         <div id="game-status" class="overlay-layer">Loading Game...</div>
         <div id="fb-sdk-cmd-selector" class="overlay-layer">
             <select id="actionSelector" onchange="handleSelection()">
-                <option value="">▼ BASIC---------------------------------------------</option>
+                <option value="">▼ BASIC ▼</option>
                 <option value="FBInstant.getSDKVersion">FBInstant.getSDKVersion</option>
                 <option value="FBInstant.getPlatform">FBInstant.getPlatform</option>
                 <option value="FBInstant.getSupportedAPIs">FBInstant.getSupportedAPIs</option>
+                <option value="">▼ LogEvent ▼</option>
+                <option value="logEvent.purchase">logEvent.purchase</option>
+                <option value="logEvent.level_complete">logEvent.level_complete</option>
+                <option value="logEvent.custom_event">logEvent.custom_event</option>
             </select>
         </div>
     </div>
@@ -109,17 +113,39 @@
 
             // Logic based on selection
             if (choice === "FBInstant.getPlatform") {
-                overlay.innerText = statusFormatter(choice, FBInstant.getPlatform());
+                displayAndConsoleLog(choice, FBInstant.getPlatform());
             } else if (choice === "FBInstant.getSDKVersion") {
-                overlay.innerText = statusFormatter(choice, FBInstant.getSDKVersion());
+                displayAndConsoleLog(choice, FBInstant.getSDKVersion());
             } else if (choice === "FBInstant.getSupportedAPIs") {
-                overlay.innerText = statusFormatter(choice, FBInstant.getSupportedAPIs());
-                console.log(FBInstant.getSupportedAPIs());
+                displayAndConsoleLog(choice, FBInstant.getSupportedAPIs());
+            } else if (choice === "logEvent.purchase") {
+                FBInstant.logEvent("purchase",
+                    199,
+                    { 'fb_content_id': 'gold_pack_199', 'fb_content_type': 'product', 'fb_currency': 'USD' }
+                );
+                displayAndConsoleLog(choice, "");
+            }
+            else if (choice === "logEvent.level_complete") {
+                FBInstant.logEvent("level_complete",
+                    1,
+                    { 'fb_level': 1 }
+                );
+                displayAndConsoleLog(choice, "");
+            }
+            else if (choice === "logEvent.custom_event") {
+                FBInstant.logEvent("custom_event", 42, { custom_property: 'custom_value' });
+                displayAndConsoleLog(choice, "");
             }
 
             setTimeout(() => {
                 overlay.innerText = "Hello back, " + playerId;
             }, 1500);
+        }
+
+        function displayAndConsoleLog(choice, value) {
+            const overlay = document.getElementById('game-status');
+            overlay.innerText = statusFormatter(choice, value);
+            console.log(choice + ": " + value);
         }
 
         function statusFormatter(choice, value) {
