@@ -1,0 +1,5 @@
+<View>
+    <Image src="{{FBInstant.player.photo}}" className="profilePicture" />
+    <Text content="{{FBInstant.player.name}}" className="playerName"/>
+    <Text content="{{score}}" className="playerScore"/>
+</View>
