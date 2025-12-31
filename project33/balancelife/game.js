@@ -9,6 +9,9 @@ window.onload = function() {
             width: 600,
             height: 600
         },
+        render: {
+            preserveDrawingBuffer: true
+        },
         scene: playGame
     }
     game = new Phaser.Game(gameConfig);

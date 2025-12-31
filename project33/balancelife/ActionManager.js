@@ -1,4 +1,4 @@
- function handleSelection() {
+ async function handleSelection() {
             const selector = document.getElementById('actionSelector');
             const choice = selector.value;
             const overlay = document.getElementById('game-status');
@@ -13,7 +13,21 @@
                 displayAndConsoleLog(choice, FBInstant.getSDKVersion());
             } else if (choice === "FBInstant.getSupportedAPIs") {
                 displayAndConsoleLog(choice, FBInstant.getSupportedAPIs());
-            } else if (choice === "logEvent.purchase") {
+            } else if (choice === "FBInstant.shareAsync") {
+                const base64Picture = await new Promise((resolve) => {
+                    game.renderer.snapshot(function (image) {
+                        resolve(image.src);
+                    });
+                });
+                FBInstant.shareAsync({
+                    intent: 'REQUEST',
+                    image: base64Picture,
+                    text: 'X is asking for your help!',
+                }).then(function () {
+                    displayAndConsoleLog(choice, "Share successful");
+                });
+            }
+            else if (choice === "logEvent.purchase") {
                 FBInstant.logEvent("purchase",
                     199,
                     { 'fb_content_id': 'gold_pack_199', 'fb_content_type': 'product', 'fb_currency': 'USD' }
