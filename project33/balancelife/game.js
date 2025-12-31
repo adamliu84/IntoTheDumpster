@@ -1,5 +1,5 @@
 let game;
-window.onload = function() {
+window.onload = function () {
     let gameConfig = {
         type: Phaser.AUTO,
         scale: {
@@ -17,11 +17,11 @@ window.onload = function() {
     game = new Phaser.Game(gameConfig);
     window.focus();
 }
-class playGame extends Phaser.Scene{
-    constructor(){
+class playGame extends Phaser.Scene {
+    constructor() {
         super("PlayGame");
     }
-    create(){
+    create() {
 
         // Box2D works with meters. We need to convert meters to pixels.
         // let's say 30 pixels = 1 meter.
@@ -41,10 +41,10 @@ class playGame extends Phaser.Scene{
         this.time.addEvent({
             delay: 500,
             callbackScope: this,
-            callback: function(){
+            callback: function () {
                 this.createBox(Phaser.Math.Between(100, game.config.width - 100), -100, Phaser.Math.Between(20, 80), Phaser.Math.Between(20, 80), true);
-                this.tick ++;
-                if(this.tick == 100){
+                this.tick++;
+                if (this.tick == 100) {
                     this.scene.start("PlayGame");
                 }
             },
@@ -55,11 +55,11 @@ class playGame extends Phaser.Scene{
     // here we go with some Box2D stuff
     // arguments: x, y coordinates of the center, with and height of the box, in pixels
     // we'll conver pixels to meters inside the method
-    createBox(posX, posY, width, height, isDynamic){
+    createBox(posX, posY, width, height, isDynamic) {
 
         // this is how we create a generic Box2D body
         let box = this.world.createBody();
-        if(isDynamic){
+        if (isDynamic) {
 
             // Box2D bodies born as static bodies, but we can make them dynamic
             box.setDynamic();
@@ -92,7 +92,7 @@ class playGame extends Phaser.Scene{
         box.setUserData(userData);
     }
 
-    update(){
+    update() {
 
         // advance the simulation by 1/20 seconds
         this.world.step(1 / 30);
@@ -101,7 +101,7 @@ class playGame extends Phaser.Scene{
         this.world.clearForces();
 
         // iterate through all bodies
-        for (let b = this.world.getBodyList(); b; b = b.getNext()){
+        for (let b = this.world.getBodyList(); b; b = b.getNext()) {
 
             // get body position
             let bodyPosition = b.getPosition();
