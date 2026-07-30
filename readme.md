@@ -35,3 +35,4 @@
 31. Haskell standard FFI binding / C-call
 32. MCP server in python
 33. Simple Meta Instant Game SDK implementation
+34. VS Code Copilot with mcp - Stripe, Figma
